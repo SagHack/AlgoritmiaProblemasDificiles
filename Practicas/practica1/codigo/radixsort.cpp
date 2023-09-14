@@ -68,7 +68,6 @@ void radixsort(vector<int>& v)
 {
     // Obtenemos el número de elementos del vector.
     int n = v.size();
-
     if(n > 1){
          
         // Obtenemos el máximo de los números del vector.
@@ -165,15 +164,15 @@ void iteracionRadixsort(vector<int>& v, int exp)
     for(int j = 0; j < n; j++){
         v_ordenado.push_back(0);
     }
-    
 
     int i; // iterador de bucles
     int ocurrencias[10] = {0};  // vector donde guardamos las ocurrencias de cada posible
                                 // valor de la cifra.
-                                // Posibles valores: [0,9] 
+                                // Posibles valores: [-9,9] 
 
     // Acumulamos las ocurrencias de cada cifra.
     for (i = 0; i < n; i++){
+        int index = (v[i] / exp) % 10;
         ocurrencias[(v[i] / exp) % 10]++;
         // (v[i] / exp) % 10 es igual que si seleccionasemos el valor de la cifra a coger del número.
     }
@@ -186,14 +185,16 @@ void iteracionRadixsort(vector<int>& v, int exp)
 
     // Creamos el vector ordenado
     for (i = n - 1; i >= 0; i--) {
-        ocurrencias[(v[i] / exp) % 10]--;
+        int index = (v[i] / exp) % 10;
+        ocurrencias[index]--;
         v_ordenado[ocurrencias[(v[i] / exp) % 10]] = v[i];
     }
-    
+
     // Hacemos que v pase a ser el vector ordenado.
     for (i = 0; i < n; i++){
         v[i] = v_ordenado[i];
     }
+  
 }
 
 /* 
@@ -207,7 +208,7 @@ void iteracionRadixsort(vector<string>& v, int cifra)
 {   
     // Obtenemos el número de elementos del vector.
     int n = v.size();
-
+    
 
     // Generamos el vector donde guardaremos el vector ordenado tras la iteración
     vector<string> v_ordenado;
@@ -222,8 +223,6 @@ void iteracionRadixsort(vector<string>& v, int cifra)
                                 // Posibles valores: [0,9] 
 
     
-    
-    
     // Acumulamos las ocurrencias de cada cifra.
     for (i = 0; i < n; i++){
         
@@ -231,7 +230,7 @@ void iteracionRadixsort(vector<string>& v, int cifra)
         int l = v[i].length();
 
         char c;
-
+        
         // Si la cifra a buscar es mayor que la longitud de palabra, entonces la cifra es 0.
         if (l < cifra){
             c = '0';
@@ -241,10 +240,11 @@ void iteracionRadixsort(vector<string>& v, int cifra)
             string saux = v[i];
             c = saux[l-cifra];
         }
-
         int numero = c - '0';   // Obtenemos el valor de la cifra del número a partir del carácter 
-                                // que lo representa.
+                                    // que lo representa.
         ocurrencias[numero]++;
+        
+        
     }
         
 
@@ -283,3 +283,4 @@ void iteracionRadixsort(vector<string>& v, int cifra)
 
 
 /****************************************************************************************************/
+

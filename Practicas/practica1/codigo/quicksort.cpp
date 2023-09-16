@@ -1,217 +1,127 @@
 #include <iostream>
-#include <vector>
+#include <cstdlib>
 #include <string>
 #include "quicksort.hpp"
 using namespace std;
 
-// A utility function to print an array
-void print(vector<int> arr, int n)
+/****************************************************************************************************/
+/* Predefinición de funciones locales usadas en el algoritmo de ordenación quicksort implementado   */
+
+
+/* CAMBIAR
+ * Precondición:    el número de elementos de v tiene que ser mayor que 0.
+ * Postcondición:   devuelve el máximo de los números del vector.
+ */
+void quicksortRec(vector<int>& v, int inicio, int final);
+
+/* 
+ * Precondición:    el número de elementos de v tiene que ser mayor que 0.
+ * Postcondición:   devuelve la longitud máxima de las cadenas del vector.
+ */
+
+/* 
+ * Precondición:    el número de elementos de v tiene que ser mayor que 0.
+ * Postcondición:   ordena el vector v de forma ascendente según el valor de una 
+ *                  cifra de los números del vector.
+ *                  La cifra con la que ordenar en la iteración es igual al 
+ *                  logaritmo en base 10 de exp.
+ */
+
+/* 
+ * Precondición:    el número de elementos de v tiene que ser mayor que 0 y los 
+ *                  elementos del vector v son cadenas que representan
+ *                  números en formato entero.
+ * Postcondición:   ordena el vector v de forma ascendente según el valor de la 
+ *                  cifra de los números del vector.
+ */
+
+
+/****************************************************************************************************/
+
+
+/****************************************************************************************************/
+/*                Implementación de las funciones de ordenación según algoritmo quicksort           */
+
+
+/* 
+ * Precondición:
+ * Postcondición:   ordena el vector v de forma ascendente 
+ *                  mediante el algoritmo de ordenación quicksort.
+ */
+void quicksort(vector<int>& v)
 {
-    for (int i = 0; i < n; i++){
-        cout << arr[i] << " ";
+    int n = v.size();
+    if(n > 1){
+        quicksortRec(v,0,n-1);
     }
-    cout << endl;
-}
-
-// A utility function to print an array
-void print(vector<string> arr, int n)
-{
-    for (int i = 0; i < n; i++){
-        cout << arr[i] << " ";
-    }
-    cout << endl;
-}
-
-
-// Precondicion: El array no puede ser vacio y tiene que ser de tipo int
-// Postcondicion : Devuelve el número de mayor valor en el array
-int getMax(vector<int> arr, int n)
-{
-    int mx = arr[0];
-    for (int i = 1; i < n; i++){
-        if (arr[i] > mx){
-            mx = arr[i];
-        }
-    }
-    return mx;
-}
-
-int obtenerCifrasMaximo(vector<string> arr, int n)
-{
-    string s = arr[0];
-    for (int i = 1; i < n; i++){
-        string aux = arr[i];
-        if (aux.length() > s.length()){
-            s = arr[i];
-        }
-    }
-    return s.length();
-}
-
-// A function to do counting sort of arr[]
-// according to the digit
-// represented by exp.
-void countSort(vector<int>& arr, int n, int exp)
-{
-
-    // Output array
-    vector<int> output;
-    for(int j = 0; j < n; j++){
-        output.push_back(0);
-    }
-    
-    int i, count[10] = {0};
-
-    // Store count of occurrences
-    // in count[]
-    for (i = 0; i < n; i++){
-        count[(arr[i] / exp) % 10]++;
-    }
-    // Change count[i] so that count[i]
-    // now contains actual position
-    // of this digit in output[]
-    for (i = 1; i < 10; i++){
-        count[i] += count[i - 1];
-    }
-
-    // Build the output array
-    for (i = n - 1; i >= 0; i--) {
         
-        count[(arr[i] / exp) % 10]--;
-        output[count[(arr[i] / exp) % 10]] = arr[i];
-    }
-    // Copy the output array to arr[],
-    // so that arr[] now contains sorted
-    // numbers according to current digit
-    for (i = 0; i < n; i++){
-        arr[i] = output[i];
-    }
 }
 
-// A function to do counting sort of arr[]
-// according to the digit
-// represented by exp.
-void countSort(vector<string>& arr, const int n, int cifra)
-{
-    // Inicializamos el array
-    vector<string> output;
-    int i;
-    int count[10] = { 0 };
 
-    for(int j = 0; j < n; j++){
-        output.push_back("");
-    }
-    
-    
-    // Store count of occurrences
-    // in count[]
-    for (i = 0; i < n; i++){
-        int l = arr[i].length();
-        char c; 
-        if (l < cifra){
-            c = '0';
+int mediana(int primero, int segundo , int tercero){
+    if(primero >= segundo){
+        if(segundo >= tercero){
+            return 3;
         }
         else{
-            string saux = arr[i];
-            c = saux[l-cifra];
+            return 2;
         }
-        int numero = c - '0';
-        count[numero]++;
     }
-        
-
-    // Change count[i] so that count[i]
-    // now contains actual position
-    // of this digit in output[]
-    for (i = 1; i < 10; i++){
-        count[i] += count[i - 1];
-    }
-
-    // Build the output array
-    for (i = n - 1; i >= 0; i--) {
-        int l = arr[i].length();
-        string saux = arr[i];
-        char c;
-        if (l < cifra){
-            c = '0';
+    else{
+        if(primero >= tercero){
+            return 3;
         }
         else{
-            string saux = arr[i];
-            c = saux[l-cifra];
+            return 1;
         }
-        int numero = c - '0';
-        count[numero]--;
-        output[count[numero]] = arr[i];
-    }
-    // Copy the output array to arr[],
-    // so that arr[] now contains sorted
-    // numbers according to current digit
-    for (i = 0; i < n; i++){
-        arr[i] = output[i];
     }
 }
 
+int elegirPivote(vector<int> v, int inicio, int final){
 
+    int n = v.size();
 
+    if((final - inicio) >= 3){
+        int countNums = 0;
+        int nums[3] = {-1,-1,-1};
+        srand(time(nullptr));
 
-// The main function to that sorts arr[]
-// of size n using Radix Sort
-void radixsort(vector<int>& arr, int n)
-{
+        while(countNums < 3){
+            int random = rand() % (final - inicio + 1) + inicio;
+            if(nums[0] == random || nums[1] == random || nums[2] == random) continue;
+            else nums[countNums++] = random;
+        }
 
-    // Find the maximum number to
-    // know number of digits
-    int m = getMax(arr, n);
-
-    // Do counting sort for every digit.
-    // Note that instead of passing digit
-    // number, exp is passed. exp is 10^i
-    // where i is current digit number
-    for (int exp = 1; m / exp > 0; exp *= 10){
-        countSort(arr, n, exp);
-    }
+        int m = mediana(v[nums[0]],v[nums[1]],v[nums[2]]);
+        return nums[m-1];
         
-}
-
-// The main function to that sorts arr[]
-// of size n using Radix Sort
-void radixsort(vector<string>& arr, int n)
-{
-
-    // Find the maximum number to
-    // know number of digits
-    int m = obtenerCifrasMaximo(arr, n);
-
-    // Do counting sort for every digit.
-    // Note that instead of passing digit
-    // number, exp is passed. exp is 10^i
-    // where i is current digit number
-    for (int c = 1; c <= m; c++){
-        countSort(arr, n, c);
+    }
+    else{
+        return final;
     }
 }
 
 
+int particion(vector<int>& v, int inicio, int final){
 
 
+    int pivote = elegirPivote(v,inicio,final);
+    int nPivote = v[pivote];
+
+    int index = inicio;
+    for(int i = inicio; i < final; i++){
+        if(v[i] < nPivote) swap(v[i],v[index++]);
+    }
+    swap(v[index],v[pivote]);
+    return index;
+
+}
 
 
-// Driver Code
-int main()
-{
-    vector<int> arr = { 2,43,910,9,2};
-    int n = arr.size();
-    // Function Call
-    radixsort(arr, n);
-    print(arr, n);
-
-    vector<string> arrS = {"2","43","910","9","2"};
-    for(int i = 0; i < n; i++){
-        arrS.push_back(to_string(arr[i]));
-     }
-
-    // Function Call
-    radixsort(arrS, n);
-    print(arrS, n);
-    return 0;
+void quicksortRec(vector<int>& v, int inicio, int final){
+    if(final > inicio){
+        int pPivote = particion(v,inicio,final);
+        quicksortRec(v,inicio,pPivote-1);
+        quicksortRec(v,pPivote+1,final);
+    }
 }

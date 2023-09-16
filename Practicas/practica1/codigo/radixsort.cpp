@@ -15,6 +15,7 @@
 #include "radixsort.hpp"
 #include <iostream>
 #include <string>
+#include <cmath>
 using namespace std;
 
 /****************************************************************************************************/
@@ -25,7 +26,7 @@ using namespace std;
  * Precondición:    el número de elementos de v tiene que ser mayor que 0.
  * Postcondición:   devuelve el máximo de los números del vector.
  */
-int obtenerNumeroMaximo(vector<int> v, int n);
+int obtenerNumeroMaximo(vector<int> v);
 
 /* 
  * Precondición:    el número de elementos de v tiene que ser mayor que 0.
@@ -59,6 +60,29 @@ void iteracionRadixsort(vector<string>& v, int cifra);
 /*                Implementación de las funciones de ordenación según algoritmo radixsort           */
 
 
+
+// Separa los negativos y positivos en dos vectores. Pero en ambos vectores se guardan de forma positiva
+void separarNegativosPositivos(const vector<int>& original, vector<int>& neg, vector<int>& pos){
+    for (int num : original) {
+        if (num < 0) {
+            neg.push_back(abs(num)); 
+        } else {
+            pos.push_back(num); 
+        }
+    }
+}
+
+void separarNegativosPositivos(const vector<string>& original, vector<string>& neg, vector<string>& pos){
+    for (string num : original) {
+        if (num[0] == '-') {
+            neg.push_back(num.substr(1)); // Eliminamos el primer caracter, el signo negativo
+        } else {
+            pos.push_back(num); 
+        }
+    }
+}
+
+
 /* 
  * Precondición:    
  * Postcondición:   ordena el vector v de forma ascendente 
@@ -66,21 +90,55 @@ void iteracionRadixsort(vector<string>& v, int cifra);
  */
 void radixsort(vector<int>& v)
 {
-    // Obtenemos el número de elementos del vector.
+    vector<int> neg, pos;
     int n = v.size();
     if(n > 1){
-         
-        // Obtenemos el máximo de los números del vector.
-        int m = obtenerNumeroMaximo(v, n);
+        
+        separarNegativosPositivos(v,neg,pos);
 
-        // Vamos realizando las iteraciones del algoritmo de ordenación radixsort.
-        for (int exp = 1; m / exp > 0; exp *= 10){
-            iteracionRadixsort(v, exp);
+        if(pos.size() > 1){
+            // Obtenemos el máximo de los números del vector de positivos.
+            int max_pos = obtenerNumeroMaximo(pos);
+
+            // Vamos realizando las iteraciones del algoritmo de ordenación radixsort.
+            for (int exp = 1; max_pos / exp > 0; exp *= 10){
+                iteracionRadixsort(pos, exp);
+            }
         }
+
+        if(neg.size() > 1){
+            int max_neg = obtenerNumeroMaximo(neg);
+            // Vamos realizando las iteraciones del algoritmo de ordenación radixsort.
+            for (int exp = 1; max_neg / exp > 0; exp *= 10){
+                iteracionRadixsort(neg, exp);
+            }
+        }
+
+
+        // Juntamos los negativos y positivos 
+        v.clear();
+        for (int i = neg.size() - 1; i >= 0; i--) {
+            v.push_back(-neg[i]);
+        }
+    
+        for (int num : pos) {
+            v.push_back(num);
+        }
+
     }
 
     
         
+}
+
+
+
+void printStringVector(const std::vector<std::string>& vec) {
+    cout << "vector a imprimir" << endl;
+    for (const std::string& element : vec) {
+        std::cout << element << " ";
+    }
+    std::cout << std::endl;
 }
 
 /* 
@@ -91,21 +149,45 @@ void radixsort(vector<int>& v)
  */
 void radixsort(vector<string>& v)
 {
-    // Obtenemos el número de elementos del vector.
+    vector<string> neg, pos;
     int n = v.size();
-
     if(n > 1){
+        
+        separarNegativosPositivos(v,neg,pos);
 
-        // Obtenemos el número de cifras máximo de los números del vector.
-        int m = obtenerLongitudMaxima(v);
+        if(pos.size() > 1){
+            // Obtenemos el máximo de los números del vector de positivos.
+            int max_pos = obtenerLongitudMaxima(pos);
 
-        // Vamos realizando las iteraciones del algoritmo de ordenación radixsort
-        for (int c = 1; c <= m; c++){
-            iteracionRadixsort(v, c);
+            // Vamos realizando las iteraciones del algoritmo de ordenación radixsort.
+            for (int c = 1; c <= max_pos; c++){
+                iteracionRadixsort(pos, c);
+            }
         }
-    }
-}
 
+        if(neg.size() > 1){
+            int max_neg = obtenerLongitudMaxima(neg);
+            // Vamos realizando las iteraciones del algoritmo de ordenación radixsort.
+            for (int c = 1; c <= max_neg; c++){
+                iteracionRadixsort(neg, c);
+            }
+        }
+
+        // Juntamos los negativos y positivos 
+        v.clear();
+        for (int i = neg.size() - 1; i >= 0; i--) {
+            v.push_back('-' + neg[i]);
+        }
+    
+        for (string num : pos) {
+            v.push_back(num);
+        }
+
+    }
+
+    
+        
+}
 
 /****************************************************************************************************/
 
@@ -119,12 +201,12 @@ void radixsort(vector<string>& v)
  * Precondición:    el número de elementos de v tiene que ser mayor que 0.
  * Postcondición:   devuelve el máximo de los números del vector.
  */
-int obtenerNumeroMaximo(vector<int> v, int n)
+int obtenerNumeroMaximo(vector<int> v)
 {
     int mx = v[0];
-    for (int i = 1; i < n; i++){
-        if (v[i] > mx){
-            mx = v[i];
+    for (int i: v){
+        if (i > mx){
+            mx = i;
         }
     }
     return mx;
@@ -136,15 +218,14 @@ int obtenerNumeroMaximo(vector<int> v, int n)
  */
 int obtenerLongitudMaxima(vector<string> v)
 {
-    int n = v.size();
-    string s = v[0];
-    for (int i = 1; i < n; i++){
-        string aux = v[i];
-        if (aux.length() > s.length()){
-            s = v[i];
+    string mx = v[0];
+    for (string elem: v){
+        string aux = elem;
+        if (aux.length() > mx.length()){
+            mx = elem;
         }
     }
-    return s.length();
+    return mx.length();
 }
 
 /* 
@@ -156,6 +237,7 @@ int obtenerLongitudMaxima(vector<string> v)
  */
 void iteracionRadixsort(vector<int>& v, int exp)
 {
+   
     // Obtenemos el número de elementos del vector.
     int n = v.size();
 
@@ -164,18 +246,19 @@ void iteracionRadixsort(vector<int>& v, int exp)
     for(int j = 0; j < n; j++){
         v_ordenado.push_back(0);
     }
-
+  
     int i; // iterador de bucles
     int ocurrencias[10] = {0};  // vector donde guardamos las ocurrencias de cada posible
                                 // valor de la cifra.
                                 // Posibles valores: [-9,9] 
-
+    
     // Acumulamos las ocurrencias de cada cifra.
     for (i = 0; i < n; i++){
         int index = (v[i] / exp) % 10;
         ocurrencias[(v[i] / exp) % 10]++;
         // (v[i] / exp) % 10 es igual que si seleccionasemos el valor de la cifra a coger del número.
     }
+   
     
     // Hacemos que el vector ocurrencias pase a indicarnos las posiciones que deberían ocupar los números 
     // con cada valor de la cifra en esa iteración en el vector ordenado.

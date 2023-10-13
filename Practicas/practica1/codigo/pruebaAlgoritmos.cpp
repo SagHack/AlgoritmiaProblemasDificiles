@@ -130,7 +130,7 @@ void areEqual(const vector<int>& v_radixsort,const vector<int>& v_quicksort,cons
 // funciona mejor para este caso
 int main() {
     int cantidadNumeros = 10;
-    generarNumerosAleatorios("numeros_aleatorios_100.txt",214748364,1000000);
+    generarNumerosAleatorios("numeros_aleatorios_100.txt",20,1000);
     vector<int> v,v_radixsort,v_quicksort,v_mergesort;
     leerNumerosDeArchivo("numeros_aleatorios_100.txt",v);
     v_radixsort = v;

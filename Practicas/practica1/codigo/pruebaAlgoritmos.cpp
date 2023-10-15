@@ -7,6 +7,9 @@
 #include <ctime>
 #include <cstdlib>
 #include <random>
+#include <chrono>
+#include <iomanip>
+
 using namespace std;
 
 const int MAX_RANGO = 2147483647;
@@ -120,11 +123,9 @@ void generarCasoDatosRepetidos(int n, int n_repetidos,vector<int>& v) {
 
 
 
-void areEqual(const vector<int>& v_radixsort,const vector<int>& v_quicksort,const vector<int>& v_mergesort){
+bool areEqual(const vector<int>& v_radixsort,const vector<int>& v_quicksort,const vector<int>& v_mergesort){
     bool areEqual = (v_radixsort == v_mergesort && v_radixsort == v_quicksort);
-    if (areEqual) {
-        cout << "All three vectors are equal." << endl;
-    } else {
+    if (!areEqual){
         if (v_radixsort == v_mergesort) {
             cout << "v_radixsort and v_mergesort are equal, but v_quicksort is different." << endl;
         } else if (v_radixsort == v_quicksort) {
@@ -135,46 +136,51 @@ void areEqual(const vector<int>& v_radixsort,const vector<int>& v_quicksort,cons
             cout << "All three vectors are different." << endl;
         }
     }
+    return areEqual;
 }
 
 
-// void leerCSV(string archivoCSV, vector<string>& v) {
-//     ifstream archivo(archivoCSV);
+void leerCSV(string archivoCSV, int columna_a_leer, vector<string>& v) {
+    ifstream archivo(archivoCSV);
 
-//     if (!archivo.is_open()) {
-//         cerr << "No se pudo abrir el archivo CSV." << endl;
-//         return;
-//     }
+    if (!archivo.is_open()) {
+        cerr << "No se pudo abrir el archivo CSV." << endl;
+        return;
+    }
 
-//     string linea;
+    string linea;
 
-//     // Ignoramos la primera línea que contiene los encabezados
-//     getline(archivo, linea);
+    // Ignoramos la primera línea que contiene los encabezados
+    getline(archivo, linea);
 
-//     while (getline(archivo, linea)) {
-//         istringstream ss(linea);
-//         string token;
+    while (getline(archivo, linea)) {
+        string token;
+        size_t pos = 0;
+        int columna = 1;
 
-//         // Usamos ';' como delimitador para separar las columnas
-//         int columna = 1;
-//         while (getline(ss, token, ';')) {
-//             if (columna == 3) {  // La tercera columna contiene el ISBN
-//                 v.push_back(token);
-//             }
-//             columna++;
-//         }
-//     }
+        while ((pos = linea.find(';')) != string::npos) {
+            token = linea.substr(0, pos);
+            
+            if (columna == columna_a_leer) {
+                v.push_back(token);
+            }
 
-//     archivo.close();
-// }
+            linea.erase(0, pos + 1);
+            columna++;
+        }
+        
+        if (columna == columna_a_leer) {
+            v.push_back(linea);
+        }
+    }
+
+    archivo.close();
+}
 
 
 
-void generarFicheros(){
+void generarFicheros(int n,int n_repetidos,int n_desordenados){
     vector<int> v;
-    int n = 100000; //Cantidad de números a generar
-    int n_repetidos = n/10; //Cantidad de números repetidos
-    int n_desordenados = n/10; //Cantidad de números que van a estar desordenados
     generarCasoNumerosAleatorios(MAX_RANGO,n,v);
     escribirVectorEnArchivo(v,"aleatorios.txt");
     generarCasoInversamenteOrdenado(n,v);
@@ -186,26 +192,40 @@ void generarFicheros(){
 
 }
 
+void casosPrueba(ofstream& f,string nombreFichero,int N,int n_repetidos,int n_desordenados){
+    f << "Caso de prueba con " << nombreFichero << ". N=" << N <<", N_repetidos=" << n_repetidos << ", N_desordenados=" << n_desordenados <<endl; 
+    vector<int> v, v_radixsort, v_quicksort, v_mergesort;
+    f << left << std::setw(12) << "N" << std::setw(12) << "Radixsort" << std::setw(12) << "Quicksort" << std::setw(12) << "Mergesort" << endl;
+    for (int n = 1; n < N; n *= 5) {
+        generarFicheros(n, n_repetidos, n_desordenados);
+        leerNumerosDeArchivo(nombreFichero, v);
+        v_radixsort = v;
+        v_quicksort = v;
+        v_mergesort = v;
+        f << left << std::setw(12) << n;
+        auto start = chrono::high_resolution_clock::now();
+        radixsort(v_radixsort);
+        auto stop = chrono::high_resolution_clock::now();
+        auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
+        f << left << std::setw(12) << duration.count();
 
-//books.csv esta ya preprocesado, no hay espacios en blanco ni celdas raras
-//TODO: cuando leamos del ficheor books.csv como sabemos que hay repetidos, podemos justificar cual de los algoritmos
-// funciona mejor para este caso
-int main() {
-    int cantidadNumeros = 10;
-    generarFicheros();
-    vector<int> v,v_radixsort,v_quicksort,v_mergesort;
-    leerNumerosDeArchivo("aleatorios.txt",v);
-    v_radixsort = v;
-    v_quicksort = v;
-    v_mergesort = v;
-    radixsort(v_radixsort);
-    quicksort(v_quicksort);
-    mergeSort(v_mergesort,0,v_mergesort.size()-1);
-    // cout << "Radixsort: " << v_radixsort << endl;
-    // cout << "Quicksort: " <<  v_quicksort << endl;
-    // cout << "Mergesort: " <<  v_mergesort << endl;
-    areEqual(v_radixsort,v_quicksort,v_mergesort);
-    return 0;
+        start = chrono::high_resolution_clock::now();  
+        quicksort(v_quicksort);
+        stop = chrono::high_resolution_clock::now();
+        duration = chrono::duration_cast<chrono::microseconds>(stop - start);
+        f << left << std::setw(12) << duration.count();
+
+        start = chrono::high_resolution_clock::now();
+        mergesort(v_mergesort);
+        stop = chrono::high_resolution_clock::now();
+        duration = chrono::duration_cast<chrono::microseconds>(stop - start);
+        f << left << std::setw(12) << duration.count() << endl;
+        
+        if (!areEqual(v_radixsort, v_quicksort, v_mergesort)) {
+            exit(-1);
+        }
+    }
+    f << endl;
 }
 
 
@@ -213,29 +233,35 @@ int main() {
 
 
 
+//books.csv esta ya preprocesado, no hay espacios en blanco ni celdas raras
+//TODO: cuando leamos del ficheor books.csv como sabemos que hay repetidos, podemos justificar cual de los algoritmos
+// funciona mejor para este caso
+int main() {
 
-// int main(){  
-//     vector<int> v_desord_int_radixsort = {4, 822, 732, 40, 50, 6, 2, 1, 9, 73};
-//     //TODO: El quicksort falla, si lo ejecutas muchas veces lo mismo da distintos resultados
-//     vector<int> v_desord_int_quicksort = {4, 822, 732, 40, 50, 6, 2, 1, 9, 73};
-//     vector<int> v_desord_int_mergesort = {4, 822, 732, 40, 50, 6, 2, 1, 9, 73};
-    
-//     radixsort(v_desord_int_radixsort);
-//     cout << v_desord_int_radixsort << endl; 
-//     quicksort(v_desord_int_quicksort);
-//     cout << v_desord_int_quicksort << endl;
+    ofstream f("resultados.txt");
+    string fichAleatorios = "aleatorios.txt";
+    string fichCasiOrdenados = "casiOrdenado.txt";
+    string fichDatosRepetidos = "datosRepetidos.txt";
+    string fichInversamenteOrdneado = "inversamenteOrdenados.txt";
+    int max_n = 10000000;
+    if (f.is_open()) {
 
-//     mergeSort(v_desord_int_mergesort,0,v_desord_int_mergesort.size()-1);
-//     cout << v_desord_int_mergesort << endl;
+        for(int i = 10;i<max_n;i*=10){
+            casosPrueba(f,fichAleatorios,i,0,0);
+        }
+        for(int i = 10;i<max_n;i*=10){
+            casosPrueba(f,fichCasiOrdenados,i,0,i/10);
+        }
+        for(int i = 10;i<max_n;i*=10){
+            casosPrueba(f,fichDatosRepetidos,i,i/10,0);
+        }
+        for(int i = 10;i<max_n;i*=10){
+            casosPrueba(f,fichInversamenteOrdneado,i,0,0);
+        }
+        f.close();
+    }else{
+        cerr << "No se pudo abrir el archivo para escritura." << endl;
+    }
 
-
-
-//     // cout << "Ahora el que va con strings" << endl;
-
-//     // vector<string> v_desord = {"32", "822", "732", "40", "50", "5", "2", "1", "9", "73"};
-//     // radixsort(v_desord);
-//     // cout << v_desord << endl;
-
-
-    
-// }
+    return 0;
+}

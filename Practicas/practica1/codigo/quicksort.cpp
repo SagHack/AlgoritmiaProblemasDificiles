@@ -1,3 +1,12 @@
+/*
+ * Fichero:   		quicksort.cpp
+ * Autores: 		Diego García Aranda 820506
+                    Simón Alonso Gutiérrez 821038
+ * Fecha entrega:	18/10/2023
+ * Comentarios:     Fichero que implementa las funciones que componen la función 
+ *                  que ordena vectores de números mediante el algoritmo de ordenación
+ *                  quicksort.
+ */
 #include <iostream>
 #include <cstdlib>
 #include <string>
@@ -5,32 +14,35 @@
 #include "quicksort.hpp"
 using namespace std;
 
+
 /****************************************************************************************************/
 /* Predefinición de funciones locales usadas en el algoritmo de ordenación quicksort implementado   */
 
 
 /*
  * Precondición:    0 <= inicio <= fin <= |v|-1.
- * Postcondición:   ordena las componentes del vector v entre índices inicio y fin
-                    de forma ascendente mediante el algortimo de ordenación quicksort.
+ * Postcondición:   ordena el vector v entre los índices inicio y fin
+                    de forma ascendente mediante el algoritmo de ordenación quicksort.
  */
 void quicksortRec(vector<int>& v, int inicio, int fin);
 
+
 /* 
  * Precondición:    0 <= inicio <= fin <= |v|-1.
- * Postcondición:   devuelve el índice entre inicio y fin del pivote elegido para particionar v,
+ * Postcondición:   devuelve el índice, entre inicio y fin, del pivote elegido para particionar v,
                     es decir, deja v con los números menores que el pivote entre inicio y el índice
                     devuelto menos uno y con los números mayores o iguales que el pivote entre el
                     índice devuelto más uno y fin.
  */
 int particion(vector<int>& v, int inicio, int fin);
 
+
 /* 
  * Precondición:    0 <= inicio <= fin <= |v|-1.
  * Postcondición:   devuelve el índice del pivote del vector v según el número de componentes entre 
                     los índices inicio y fin:
-                        Si (fin-inicio) < 3, devuelve el indice fin.
-                        Si (fin-inicio) >= 3, se eligen tres índices aleatorios diferentes entre los 
+                        Si (fin-inicio) < 2, devuelve el indice fin.
+                        Si (fin-inicio) >= 2, se eligen tres índices aleatorios diferentes entre los 
                         índices inicio y fin y devuelve el índice cuyo valor es la mediana de entre
                         los valores de los tres índices.
  */
@@ -47,12 +59,12 @@ int elegirPivote(vector<int> v, int inicio, int fin);
 int mediana(int primero, int segundo , int tercero);
 
 
-
 /****************************************************************************************************/
 
 
 /****************************************************************************************************/
 /*                Implementación de las funciones de ordenación según algoritmo quicksort           */
+
 
 /* 
  * Precondición:    
@@ -67,14 +79,17 @@ void quicksort(vector<int>& v){
 }
 
 
+/****************************************************************************************************/
+
 
 /****************************************************************************************************/
 /* Implementación de funciones locales usadas en el algoritmo de ordenación radixsort implementado  */
 
+
 /*
  * Precondición:    0 <= inicio <= fin <= |v|-1.
- * Postcondición:   devuelve las componentes del vector v entre índices inicio y fin
-                    ordenadas de forma ascendente mediante el algortimo de ordenación quicksort.
+ * Postcondición:   ordena el vector v entre los índices inicio y fin
+                    de forma ascendente mediante el algoritmo de ordenación quicksort.
  */
 void quicksortRec(vector<int>& v, int inicio, int fin){
 
@@ -92,9 +107,10 @@ void quicksortRec(vector<int>& v, int inicio, int fin){
     }
 }
 
+
 /* 
  * Precondición:    0 <= inicio <= fin <= |v|-1.
- * Postcondición:   devuelve el índice entre inicio y fin del pivote elegido para particionar v,
+ * Postcondición:   devuelve el índice, entre inicio y fin, del pivote elegido para particionar v,
                     es decir, deja v con los números menores que el pivote entre inicio y el índice
                     devuelto menos uno y con los números mayores o iguales que el pivote entre el
                     índice devuelto más uno y fin.
@@ -121,8 +137,8 @@ int particion(vector<int>& v, int inicio, int fin){
  * Precondición:    0 <= inicio <= fin <= |v|-1.
  * Postcondición:   devuelve el índice del pivote del vector v según el número de componentes entre 
                     los índices inicio y fin:
-                        Si (fin-inicio) < 3, devuelve el indice fin.
-                        Si (fin-inicio) >= 3, se eligen tres índices aleatorios diferentes entre los 
+                        Si (fin-inicio) < 2, devuelve el indice fin.
+                        Si (fin-inicio) >= 2, se eligen tres índices aleatorios diferentes entre los 
                         índices inicio y fin y devuelve el índice cuyo valor es la mediana de entre
                         los valores de los tres índices.
  */
@@ -130,7 +146,7 @@ int elegirPivote(vector<int> v, int inicio, int fin){
 
     int n = v.size();
 
-    if((fin - inicio) >= 3){
+    if((fin - inicio) >= 2){
         int countNums = 0;
         int indices[3] = {-1,-1,-1};
         srand(time(nullptr));
@@ -147,6 +163,7 @@ int elegirPivote(vector<int> v, int inicio, int fin){
     }
     return fin;
 }
+
 
 /* 
  * Precondición:    

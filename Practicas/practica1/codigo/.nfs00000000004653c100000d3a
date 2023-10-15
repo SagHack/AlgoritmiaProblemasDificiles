@@ -30,7 +30,7 @@ CHECK_BUILD_DIR=checkdirectoriobuild
 CHECK_BIN_DIR=checkdirectoriobin
 
 
-all : ${CHECK_BUILD_DIR} ${CHECK_BIN_DIR} ${BIN_DIR}/${PRUEBAS}
+all : ${PRUEBAS}
 #----------------------------------------------------------------------------
 # QUICKSORT
 # Compilacion
@@ -54,15 +54,15 @@ ${BUILD_DIR}/${MERGESORT}.o: ${CODIGO_DIR}/${MERGESORT}.cpp
 ${BUILD_DIR}/${PRUEBAS}.o: ${CODIGO_DIR}/${PRUEBAS}.cpp
 	${CC} -c ${CPPFLAGS} ${CODIGO_DIR}/${PRUEBAS}.cpp -o ${BUILD_DIR}/${PRUEBAS}.o
 # Linkado
-${BIN_DIR}/${PRUEBAS}: ${BUILD_DIR}/${PRUEBAS}.o ${BUILD_DIR}/${QUICKSORT}.o ${BUILD_DIR}/${MERGESORT}.o ${BUILD_DIR}/${RADIXSORT}.o 
+${PRUEBAS}: ${CHECK_BUILD_DIR} ${CHECK_BIN_DIR} ${BUILD_DIR}/${PRUEBAS}.o ${BUILD_DIR}/${QUICKSORT}.o ${BUILD_DIR}/${MERGESORT}.o ${BUILD_DIR}/${RADIXSORT}.o 
 	${CC} ${BUILD_DIR}/${QUICKSORT}.o ${BUILD_DIR}/${MERGESORT}.o ${BUILD_DIR}/${RADIXSORT}.o ${BUILD_DIR}/${PRUEBAS}.o -o ${BIN_DIR}/${PRUEBAS}
 #-----------------------------------------------------------
 # LIMPIEZA
 clean:
-	@if [ -d $(BUILD_DIR) ]; then \
+	@if [ ! -d $(BUILD_DIR) ]; then \
     	$(RM) -r $(BUILD_DIR); \
     fi
-	@if [ -d $(BIN_DIR) ]; then \
+	@if [ ! -d $(BIN_DIR) ]; then \
         $(RM) -r $(BIN_DIR); \
     fi
 #-----------------------------------------------------------

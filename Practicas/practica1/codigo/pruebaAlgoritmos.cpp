@@ -1,6 +1,6 @@
-#include "radixsort.cpp"
-#include "mergesort.cpp"
-#include "quicksort.cpp"
+#include "radixsort.hpp"
+#include "mergesort.hpp"
+#include "quicksort.hpp"
 #include <vector>
 #include <iostream>
 #include <fstream>
@@ -236,7 +236,24 @@ void casosPrueba(ofstream& f,string nombreFichero,int N,int n_repetidos,int n_de
 //books.csv esta ya preprocesado, no hay espacios en blanco ni celdas raras
 //TODO: cuando leamos del ficheor books.csv como sabemos que hay repetidos, podemos justificar cual de los algoritmos
 // funciona mejor para este caso
-int main() {
+int main(int argc, char* argv[]) {
+
+    if(argc == 1){
+
+        int prueba = stoi(argv[1]);
+
+        string fichero = "";
+        switch(prueba){
+            case 0:
+
+        }
+
+    }
+    else{
+        cerr << "Error en la ejecución del programa: faltan argumentos.\n\tEjemplo ejecución: pruebaAlgoritmos <numPrueba> siendo numPrueba número entre 0 y 9\n";
+        return -1;
+    }
+
 
     ofstream f("resultados.txt");
     string fichAleatorios = "aleatorios.txt";

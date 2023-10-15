@@ -1,6 +1,6 @@
-#include "radixsort.hpp"
-#include "mergesort.hpp"
-#include "quicksort.hpp"
+#include "radixsort.cpp"
+#include "mergesort.cpp"
+#include "quicksort.cpp"
 #include <vector>
 #include <iostream>
 #include <fstream>
@@ -47,7 +47,7 @@ void escribirVectorEnArchivo(const vector<int>& vector, const string& nombreArch
 }
 
 
-void generarCasoNumerosAleatorios(int maxRango,int n,vector<int>& v) {
+void generarCasoNumerosAleatoriosGrandes(int maxRango,int n,vector<int>& v) {
 
     // mt19937_64 gen (random_device{}());
     // int numero;
@@ -68,6 +68,19 @@ void generarCasoNumerosAleatorios(int maxRango,int n,vector<int>& v) {
     }
 
 }
+
+void generarCasoNumerosAleatoriosPequenos(int n,vector<int>& v) {
+
+    srand(time(NULL));
+    int random;
+    for (int i = 0; i < n; i++) {
+        random = rand();
+        v.push_back(random);
+    }
+
+}
+
+
 
 void leerNumerosDeArchivo(const string& nombreArchivo,vector<int>& numeros) {
     ifstream archivo(nombreArchivo);   
@@ -111,7 +124,7 @@ void generarCasoCasiOrdenado(int n,int n_desordenados, vector<int>& v) {
 void generarCasoDatosRepetidos(int n, int n_repetidos,vector<int>& v) {
     v.clear(); 
 
-    generarCasoNumerosAleatorios(MAX_RANGO,n,v);
+    generarCasoNumerosAleatoriosPequenos(n,v);
 
     // Introducir algunos elementos repetidos
     for (int i = 0; i < n_repetidos; i++) {
@@ -181,7 +194,7 @@ void leerCSV(string archivoCSV, int columna_a_leer, vector<string>& v) {
 
 void generarFicheros(int n,int n_repetidos,int n_desordenados){
     vector<int> v;
-    generarCasoNumerosAleatorios(MAX_RANGO,n,v);
+    generarCasoNumerosAleatoriosPequenos(n,v);
     escribirVectorEnArchivo(v,"aleatorios.txt");
     generarCasoInversamenteOrdenado(n,v);
     escribirVectorEnArchivo(v,"inversamenteOrdenados.txt");
@@ -189,42 +202,43 @@ void generarFicheros(int n,int n_repetidos,int n_desordenados){
     escribirVectorEnArchivo(v,"casiOrdenado.txt");
     generarCasoDatosRepetidos(n,n_repetidos,v);
     escribirVectorEnArchivo(v,"datosRepetidos.txt");
-
 }
 
 void casosPrueba(ofstream& f,string nombreFichero,int N,int n_repetidos,int n_desordenados){
     f << "Caso de prueba con " << nombreFichero << ". N=" << N <<", N_repetidos=" << n_repetidos << ", N_desordenados=" << n_desordenados <<endl; 
     vector<int> v, v_radixsort, v_quicksort, v_mergesort;
-    f << left << std::setw(12) << "N" << std::setw(12) << "Radixsort" << std::setw(12) << "Quicksort" << std::setw(12) << "Mergesort" << endl;
-    for (int n = 1; n < N; n *= 5) {
+    string r="radixsort: ",q="quicksort: ",m="mergesort: ";
+    for (int n = 2; n <= N; n *= 2) {
         generarFicheros(n, n_repetidos, n_desordenados);
         leerNumerosDeArchivo(nombreFichero, v);
         v_radixsort = v;
         v_quicksort = v;
         v_mergesort = v;
-        f << left << std::setw(12) << n;
+        
         auto start = chrono::high_resolution_clock::now();
         radixsort(v_radixsort);
         auto stop = chrono::high_resolution_clock::now();
         auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
-        f << left << std::setw(12) << duration.count();
+        r += "(" + to_string(n) + "," + to_string(duration.count()) + "),";
+
 
         start = chrono::high_resolution_clock::now();  
         quicksort(v_quicksort);
         stop = chrono::high_resolution_clock::now();
         duration = chrono::duration_cast<chrono::microseconds>(stop - start);
-        f << left << std::setw(12) << duration.count();
-
+        q += "(" + to_string(n) + "," + to_string(duration.count()) + "),";
         start = chrono::high_resolution_clock::now();
         mergesort(v_mergesort);
         stop = chrono::high_resolution_clock::now();
         duration = chrono::duration_cast<chrono::microseconds>(stop - start);
-        f << left << std::setw(12) << duration.count() << endl;
-        
+        m += "(" + to_string(n) + "," + to_string(duration.count()) + "),";
         if (!areEqual(v_radixsort, v_quicksort, v_mergesort)) {
             exit(-1);
         }
     }
+    f << r << endl;
+    f << q << endl;
+    f << m << endl;
     f << endl;
 }
 
@@ -238,21 +252,21 @@ void casosPrueba(ofstream& f,string nombreFichero,int N,int n_repetidos,int n_de
 // funciona mejor para este caso
 int main(int argc, char* argv[]) {
 
-    if(argc == 1){
+    // if(argc == 1){
 
-        int prueba = stoi(argv[1]);
+    //     int prueba = stoi(argv[1]);
 
-        string fichero = "";
-        switch(prueba){
-            case 0:
+    //     string fichero = "";
+    //     switch(prueba){
+    //         case 0:
 
-        }
+    //     }
 
-    }
-    else{
-        cerr << "Error en la ejecución del programa: faltan argumentos.\n\tEjemplo ejecución: pruebaAlgoritmos <numPrueba> siendo numPrueba número entre 0 y 9\n";
-        return -1;
-    }
+    // }
+    // else{
+    //     cerr << "Error en la ejecución del programa: faltan argumentos.\n\tEjemplo ejecución: pruebaAlgoritmos <numPrueba> siendo numPrueba número entre 0 y 9\n";
+    //     return -1;
+    // }
 
 
     ofstream f("resultados.txt");
@@ -260,21 +274,39 @@ int main(int argc, char* argv[]) {
     string fichCasiOrdenados = "casiOrdenado.txt";
     string fichDatosRepetidos = "datosRepetidos.txt";
     string fichInversamenteOrdneado = "inversamenteOrdenados.txt";
-    int max_n = 10000000;
+    int max_n = 32768;
+    int iter = 1;
+    string cost_time = "";
     if (f.is_open()) {
 
-        for(int i = 10;i<max_n;i*=10){
-            casosPrueba(f,fichAleatorios,i,0,0);
+        for (int n = 2; n <= max_n; n *= 2) {
+            cost_time += "(" + to_string(n) + "," + to_string(n*log(n)) + "),";
         }
-        for(int i = 10;i<max_n;i*=10){
-            casosPrueba(f,fichCasiOrdenados,i,0,i/10);
+        f << "n log n: " << cost_time << endl;
+
+        cost_time = "";
+        for (int n = 2; n <= max_n; n *= 2) {
+            cost_time += "(" + to_string(n) + "," + to_string(n*n) + "),";
         }
-        for(int i = 10;i<max_n;i*=10){
-            casosPrueba(f,fichDatosRepetidos,i,i/10,0);
-        }
-        for(int i = 10;i<max_n;i*=10){
-            casosPrueba(f,fichInversamenteOrdneado,i,0,0);
-        }
+        f << "n^2: " << cost_time << endl;
+
+        cout << "HOLA" << endl;
+        casosPrueba(f,fichAleatorios,max_n,0,0);
+        cout << "HOLA" << endl;
+        casosPrueba(f,fichCasiOrdenados,max_n,0,max_n/10);
+        cout << "HOLA" << endl;
+        casosPrueba(f,fichCasiOrdenados,max_n,0,max_n/5);
+        cout << "HOLA" << endl;
+        casosPrueba(f,fichCasiOrdenados,max_n,0,max_n/2);
+        cout << "HOLA" << endl;
+        casosPrueba(f,fichDatosRepetidos,max_n,max_n/10,0);
+        cout << "HOLA" << endl;
+        casosPrueba(f,fichDatosRepetidos,max_n,max_n/5,0);
+        cout << "HOLA" << endl;
+        casosPrueba(f,fichDatosRepetidos,max_n,max_n/2,0);
+        cout << "HOLA" << endl;
+        casosPrueba(f,fichInversamenteOrdneado,max_n,0,0);
+        cout << "HOLA" << endl;
         f.close();
     }else{
         cerr << "No se pudo abrir el archivo para escritura." << endl;

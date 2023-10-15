@@ -30,7 +30,7 @@ CHECK_BUILD_DIR=checkdirectoriobuild
 CHECK_BIN_DIR=checkdirectoriobin
 
 
-all : ${CHECK_BUILD_DIR} ${CHECK_BIN_DIR} ${BIN_DIR}/${PRUEBAS}
+all : ${BIN_DIR}/${PRUEBAS}
 #----------------------------------------------------------------------------
 # QUICKSORT
 # Compilacion
@@ -59,12 +59,8 @@ ${BIN_DIR}/${PRUEBAS}: ${BUILD_DIR}/${PRUEBAS}.o ${BUILD_DIR}/${QUICKSORT}.o ${B
 #-----------------------------------------------------------
 # LIMPIEZA
 clean:
-	@if [ -d $(BUILD_DIR) ]; then \
-    	$(RM) -r $(BUILD_DIR); \
-    fi
-	@if [ -d $(BIN_DIR) ]; then \
-        $(RM) -r $(BIN_DIR); \
-    fi
+    $(RM) ${BUILD_DIR}/.o  ${BIN_DIR}/ 
+    $(RM)dir ${BUILD_DIR} ${BIN_DIR}
 #-----------------------------------------------------------
 # VERIFICAR EXISTENCIA DIRECTORIOS
 ${CHECK_BUILD_DIR}:

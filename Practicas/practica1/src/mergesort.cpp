@@ -114,7 +114,7 @@ void mergesortRec(vector<int>& v,int izq, int der){
         // Se ordena v entre los índices med+1 y der
         mergesortRec(v,med+1,der);
         
-        //Juntamos las dos mitades
+        //Reordenamos las dos mitades
         merge(v,izq,med,der);
     }
 }

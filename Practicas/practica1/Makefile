@@ -9,28 +9,22 @@
 #*****************************************************************
 
 #---------------------------------------------------------
-CODIGO_DIR=codigo
+CODIGO_DIR=src
 BUILD_DIR=build
 BIN_DIR=bin
 
 QUICKSORT=quicksort
 RADIXSORT=radixsort
 MERGESORT=mergesort
-
 PRUEBAS=pruebaAlgoritmos
+GENERARDATOSSINTETICOS=generarDatosSinteticos
 
 CC=g++
-
 CPPFLAGS=-std=c++11 # Flags compilacion
 
-MKDIR=mkdir
-RM=rm
 
-CHECK_BUILD_DIR=checkdirectoriobuild
-CHECK_BIN_DIR=checkdirectoriobin
-
-
-all : ${BIN_DIR}/${PRUEBAS}
+pruebas : ${BIN_DIR}/${PRUEBAS}
+datosSinteticos: ${BIN_DIR}/${GENERARDATOSSINTETICOS}
 #----------------------------------------------------------------------------
 # QUICKSORT
 # Compilacion
@@ -57,18 +51,11 @@ ${BUILD_DIR}/${PRUEBAS}.o: ${CODIGO_DIR}/${PRUEBAS}.cpp
 ${BIN_DIR}/${PRUEBAS}: ${BUILD_DIR}/${PRUEBAS}.o ${BUILD_DIR}/${QUICKSORT}.o ${BUILD_DIR}/${MERGESORT}.o ${BUILD_DIR}/${RADIXSORT}.o 
 	${CC} ${BUILD_DIR}/${QUICKSORT}.o ${BUILD_DIR}/${MERGESORT}.o ${BUILD_DIR}/${RADIXSORT}.o ${BUILD_DIR}/${PRUEBAS}.o -o ${BIN_DIR}/${PRUEBAS}
 #-----------------------------------------------------------
-# LIMPIEZA
-clean:
-    $(RM) ${BUILD_DIR}/.o  ${BIN_DIR}/ 
-    $(RM)dir ${BUILD_DIR} ${BIN_DIR}
+# GENERAR DATOS SINTETICOS
+# Compilacion
+${BUILD_DIR}/${GENERARDATOSSINTETICOS}.o: ${CODIGO_DIR}/${GENERARDATOSSINTETICOS}.cpp
+	${CC} -c ${CPPFLAGS} ${CODIGO_DIR}/${GENERARDATOSSINTETICOS}.cpp -o ${BUILD_DIR}/${GENERARDATOSSINTETICOS}.o
+# Linkado
+${BIN_DIR}/${PRUEBAS}: ${BUILD_DIR}/${GENERARDATOSSINTETICOS}.o
+	${CC} ${BUILD_DIR}/${GENERARDATOSSINTETICOS}.o -o ${BIN_DIR}/${GENERARDATOSSINTETICOS}
 #-----------------------------------------------------------
-# VERIFICAR EXISTENCIA DIRECTORIOS
-${CHECK_BUILD_DIR}:
-	@if [ ! -d $(BUILD_DIR) ]; then \
-        mkdir -p $(BUILD_DIR); \
-    fi
-
-${CHECK_BIN_DIR}:
-	@if [ ! -d $(BIN_DIR) ]; then \
-        mkdir -p $(BIN_DIR); \
-    fi

@@ -13,8 +13,6 @@
  */
 
 #include "radixsort.hpp"
-#include <iostream>
-#include <string>
 #include <cmath>
 using namespace std;
 
@@ -133,7 +131,6 @@ void radixsort(vector<int>& v)
  */
 void radixsort(vector<string>& v)
 {
-    cout << "2" <<endl;
     vector<string> neg, pos;
     int n = v.size();
     if(n > 1){
@@ -207,7 +204,6 @@ int obtenerNumeroMaximo(vector<int> v)
  */
 int obtenerLongitudMaxima(vector<string> v)
 {
-    cout << "longitudMaxima" <<endl;
     string mx = v[0];
     for (string elem: v){
         string aux = elem;
@@ -215,7 +211,6 @@ int obtenerLongitudMaxima(vector<string> v)
             mx = elem;
         }
     }
-    cout << "FINlongitudMaxima" <<endl;
     return mx.length();
     
 }

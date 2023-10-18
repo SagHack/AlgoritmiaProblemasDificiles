@@ -1,7 +1,8 @@
-#include "radixsort.cpp"
-#include "mergesort.cpp"
-#include "quicksort.cpp"
+#include "radixsort.hpp"
+#include "mergesort.hpp"
+#include "quicksort.hpp"
 #include <vector>
+#include <sstream>
 #include <iostream>
 #include <fstream>
 #include <ctime>
@@ -159,7 +160,7 @@ void leerCSV(const string& archivoCSV, int columna_a_leer, vector<string>& v) {
             continue;
         }
 
-        istringstream ss(linea);
+        stringstream ss(linea);
         string token;
         int columna = 1;
 
@@ -176,17 +177,7 @@ void leerCSV(const string& archivoCSV, int columna_a_leer, vector<string>& v) {
 
 
 
-void generarFicheros(int n,int n_repetidos,int n_desordenados){
-    vector<int> v;
-    generarCasoNumerosAleatoriosPequenos(n,v);
-    escribirVectorEnArchivo(v,"aleatorios.txt");
-    generarCasoInversamenteOrdenado(n,v);
-    escribirVectorEnArchivo(v,"inversamenteOrdenados.txt");
-    generarCasoCasiOrdenado(n,n_desordenados,v);
-    escribirVectorEnArchivo(v,"casiOrdenado.txt");
-    generarCasoDatosRepetidos(n,n_repetidos,v);
-    escribirVectorEnArchivo(v,"datosRepetidos.txt");
-}
+
 
 void casosPruebaExtra(ofstream& f,string nombreFichero,int N,int n_repetidos,int n_desordenados){
     f << "Caso de prueba con " << nombreFichero << ". N=" << N <<", N_repetidos=" << n_repetidos << ", N_desordenados=" << n_desordenados <<endl; 
@@ -234,6 +225,7 @@ void elegirCasoPrueba(int casoPrueba){
     v_radixsort = v;
     v_quicksort = v;
     v_mergesort = v;
+    
     if(casoPrueba == 1){
         cout << "Caso de prueba elegido, vector con N=16384 números aleatorios:" << endl;
         leerNumerosDeArchivo("aleatorios.txt", v);
@@ -298,12 +290,12 @@ int main(int argc, char* argv[]) {
     cout << "Caso de prueba 3: vector con N=16384 números aleatorios con una décima parte repetida:" << endl;
     cout << "Caso de prueba 4: vector con N=16384 números inversamente ordenados:" << endl;
     cout << "Caso de prueba 5: vector con ISBN de libros:" << endl;
+    int prueba = 0;
     if(argc == 1){
-
-        int prueba = stoi(argv[1]);
-        // Le pasamos la prueba que queremos realizar
-       elegirCasoPrueba(prueba);
+        prueba = stoi(argv[1]); 
     }
+    // Le pasamos la prueba que queremos realizar
+    elegirCasoPrueba(prueba);
 
 
 //     ofstream f("resultados.txt");

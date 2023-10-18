@@ -7,11 +7,9 @@
  *                  que ordena vectores de números mediante el algoritmo de ordenación
  *                  quicksort.
  */
-#include <iostream>
-#include <cstdlib>
-#include <string>
-#include <ctime>
 #include "quicksort.hpp"
+#include <cstdlib>
+#include <ctime>
 using namespace std;
 
 

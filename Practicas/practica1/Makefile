@@ -5,6 +5,8 @@
 # Fecha entrega:	18/10/2023
 # Coms:   Makefile para la práctica 1 de Algoritmia para Problemas Difíciles
 #		  "make pruebas" construye el ejecutable para las pruebas automáticas
+#		  "make datosSinteticos" construye el ejecutable para la generación
+# 		   de datos sintéticos
 #		  "make clean" destruye archivos .o y ejecutables
 #*****************************************************************
 
@@ -16,7 +18,8 @@ BIN_DIR=bin
 QUICKSORT=quicksort
 RADIXSORT=radixsort
 MERGESORT=mergesort
-PRUEBAS=pruebaAlgoritmos
+PRUEBAS=pruebas
+PRUEBASINTENSIVAS=pruebasIntensivas
 GENERARDATOSSINTETICOS=generarDatosSinteticos
 
 CC=g++
@@ -56,6 +59,6 @@ ${BIN_DIR}/${PRUEBAS}: ${BUILD_DIR}/${PRUEBAS}.o ${BUILD_DIR}/${QUICKSORT}.o ${B
 ${BUILD_DIR}/${GENERARDATOSSINTETICOS}.o: ${CODIGO_DIR}/${GENERARDATOSSINTETICOS}.cpp
 	${CC} -c ${CPPFLAGS} ${CODIGO_DIR}/${GENERARDATOSSINTETICOS}.cpp -o ${BUILD_DIR}/${GENERARDATOSSINTETICOS}.o
 # Linkado
-${BIN_DIR}/${PRUEBAS}: ${BUILD_DIR}/${GENERARDATOSSINTETICOS}.o
+${BIN_DIR}/${GENERARDATOSSINTETICOS}: ${BUILD_DIR}/${GENERARDATOSSINTETICOS}.o
 	${CC} ${BUILD_DIR}/${GENERARDATOSSINTETICOS}.o -o ${BIN_DIR}/${GENERARDATOSSINTETICOS}
 #-----------------------------------------------------------

@@ -1,2 +1,36 @@
 García Aranda, Diego    820506@unizar.es    a820506
 Alonso Gutiérrez, Simón 821038@unizar.es    a821038
+
+
+La práctica está organizada en los siguientes directorios:
+    - src: alberga el código fuente de los ficheros que implementan y definen los algoritmos radixsort,
+      mergersort y quicksort, así como la generación de datos sintéticos, la ejecución pruebas simples o intensivas
+    - ficherosEntradaPruebas: alberga los ficheros de entrada usados para la ejecución de las pruebas simples, es decir, aquellas
+      pruebas que se pueden ejecutar.
+    - ficherosEntradaPruebasIntensivas: alberga los ficheros de entrada que han sido usados para la ejecución de las pruebas intensivas, 
+      es decir, aquellas pruebas usadas para obtener resultados del tiempo de ejecución de los distintos algoritmos y a partir de estos 
+      resultados sacar gráficas en las que se compare el rendimiento y ver cuál es el coste temporal de los algoritmos
+    - build: alberga los ficheros objetos creados tras la compilación de los distintos ficheros fuente.
+    - bin: alberga los ficheros binarios creados tras el linkado de los distintos ficheros objeto que hay en build.
+           Contiene un ejecutable que genera las pruebas simples y otro que genera los datos sintéticos
+
+Además de estos directorios, existen dos ficheros importantes: ejecutar1.sh y Makefile. 
+El fichero Makefile es invocado por ejecutar1.sh a la hora de la compilación los distintos ficheros fuente y del linkado de los ficheros objeto.
+El fichero ejecutar1.sh es el script que ejecuta todas las acciones posibles. Las maneras de invocarlo son:
+
+    ./ejecutar1.sh pruebas                  Ejecuta todos los casos de prueba simples         
+    ./ejecutar1.sh pruebas <num_prueba>     siendo <num_prueba> el número de caso de prueba, que puede estar entre 1 y 7. Los distintos casos de prueba son:
+
+        Caso de prueba 1 : Vector con números aleatorios pequeños
+        Caso de prueba 2 : Vector con números aleatorios grandes
+        Caso de prueba 3 : Vector ordenado ascendentemente
+        Caso de prueba 4 : Vector ordenado descendentemente
+        Caso de prueba 5 : Vector parcialmente ordenado
+        Caso de prueba 6 : Vector con números repetidos
+        Caso de prueba 7 : Vector con los datos del conjunto real, número no representables en formato int32_t, representados mediante strings.
+
+    ./ejecutar1.sh generar_datos_sinteticos                                 Genera los datos de aquellos casos de pruebas intensivas que utilizan números sintéticos, es decir, los casos del 1 al 6. 
+                                                                            
+    ./ejecutar1.sh generar_datos_sinteticos <num_caso_datos_sinteticos>     siendo <num_caso_datos_sinteticos> el número del caso de prueba intensiva a generar datos sintéticos, es decir, entre 1 y 6. 
+
+    ./ejecutar1.sh clean        borra los directorios build y bin

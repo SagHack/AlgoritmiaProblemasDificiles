@@ -16,8 +16,11 @@ using namespace std;
 #define CASO_REPETIDOS 6
 
 
+#define MAX_RANGO 1000032767
+#define MIN_RANGO 1000000000
 
-#define MAX_N 32768
+
+#define MAX_N 32769
 
 
 /* 
@@ -29,9 +32,9 @@ void escribirVectorEnArchivo(const vector<int>& v, const string& nombreArchivo) 
     ofstream archivo(nombreArchivo);
 
     if (archivo.is_open()) {
-        int size = vector.size();
+        int n = v.size();
         for (int i = 0; i < n; i++) {
-            archivo << vector[i];
+            archivo << v[i];
             if (i < n-1) {
                 archivo << " ";
             }
@@ -52,7 +55,6 @@ void escribirVectorEnArchivo(const vector<int>& v, const string& nombreArchivo) 
  * Postcondición:   v pasa a ser un vector donde v[i] <= 32767 con 0 <= i < n.
  */
 void generarCaso_NumerosAleatoriosPequenos(vector<int>& v,int n) {
-
     srand(time(NULL));
     int random;
     for (int i = 0; i < n; i++) {
@@ -65,17 +67,17 @@ void generarCaso_NumerosAleatoriosPequenos(vector<int>& v,int n) {
 //                          CASO 2
 /* 
  * Precondición:    
- * Postcondición:   v pasa a ser un vector donde v[i] <= 32767 con 0 <= i < n.
+ * Postcondición:   v pasa a ser un vector donde 1000000000 <= v[i] <= 1000032767 con 0 <= i < n.
  */
-void generarCaso_NumerosAleatoriosGrandes(vector<int>& v,int n,int maxRango) {
-    random_device rd;
-    mt19937 gen(rd()); // Mersenne Twister es un generador de números aleatorios común
-    uniform_int_distribution<int32_t> dis(INT32_MIN, INT32_MAX);
+void generarCaso_NumerosAleatoriosGrandes(vector<int>& v,int n) {
+    v.clear();
+    srand(time(NULL));
+    int random;
     for (int i = 0; i < n; i++) {
-        // Generar un número decimal aleatorio en el rango [0, 1]
-        int random_decimal = gen();
-        v.push_back(random_decimal);
+        random = MIN_RANGO + rand();
+        v.push_back(random);
     }
+
 }
 
 //                          CASO 3
@@ -107,7 +109,7 @@ void generarCaso_OrdenadoDescendentemente(vector<int>& v, int n){
 /* 
  * Precondición:    
  * Postcondición:   v pasa a ser un vector donde n_desordenados es el número de elementos
- *                  que están duplicados.
+ *                  que están descolocados de la que sería su posición real.
  */
 void generarCaso_ParcialmenteOrdenado(vector<int>& v,int n,int n_desordenados) {
     v.clear();
@@ -132,68 +134,78 @@ void generarCaso_ParcialmenteOrdenado(vector<int>& v,int n,int n_desordenados) {
  */
 void generarCaso_DatosRepetidos(vector<int>& v,int n, int n_repetidos) {
     v.clear(); 
-    generarCasoNumerosAleatoriosPequenos(n,v);
+    if(n_repetidos==n){
+        for (int i = 0; i < n_repetidos; i++) {
+            v.push_back(1);
+        }
 
-    // Introducir algunos elementos repetidos
-    for (int i = 0; i < n_repetidos; i++) {
-        int indice1 = rand() % n;
-        int indice2 = rand() % n;
-        v[indice2] = v[indice1];
     }
+    else{
+        generarCaso_NumerosAleatoriosPequenos(v,n);
+        // Introducir algunos elementos repetidos
+        for (int i = 0; i < n_repetidos; i++) {
+            int indice1 = rand() % n;
+            int indice2 = rand() % n;
+            v[indice2] = v[indice1];
+        }
+    }
+    
 }
 
 
 int main(int argc, char* argv[]){
     
-    if(argc == 1){
-        int caso = argv[1];
+    if(argc == 2){
+        int caso = stoi(argv[1]);
         vector<int> v;
+        int ordenados[] = {10,20,50}; 
+        int repetidos[] = {10,20,50,100};
         switch(caso){
             case CASO_ALEATORIOS_PEQUENOS:
-                for(int i = 0; i < MAX_N; i*=2){
-                    generarCaso_NumerosAleatoriosPequenos(v,n);
-                    escribirVectorEnArchivo(v,"AleatoriosPequenos_" + to_string(n) + ".txt");
+                for(int i = 2; i < MAX_N; i*=2){
+                    generarCaso_NumerosAleatoriosPequenos(v,i);
+                    escribirVectorEnArchivo(v,"AleatoriosPequenos_" + to_string(i) + ".txt");
                 }
                 break;
             case CASO_ALEATORIOS_GRANDES:
-                for(int i = 0; i < MAX_N; i*=2){
-                    generarCaso_NumerosAleatoriosGrandes(v);
-                    escribirVectorEnArchivo(v,"AleatoriosGrandes_" + to_string(n) + ".txt");
+                for(int i = 2; i < MAX_N; i*=2){
+                    generarCaso_NumerosAleatoriosGrandes(v,i);
+                    escribirVectorEnArchivo(v,"AleatoriosGrandes_" + to_string(i) + ".txt");
                 }
                 break;
             case CASO_ORDENADO_ASC:
-                for(int i = 0; i < MAX_N; =i*=2){
-                    generarCaso_OrdenadoAscendentemente(v);
-                    escribirVectorEnArchivo(v,"OrdenadoAsc_" + to_string(n) + ".txt");
+                for(int i = 2; i < MAX_N; i*=2){
+                    generarCaso_OrdenadoAscendentemente(v,i);
+                    escribirVectorEnArchivo(v,"OrdenadoAsc_" + to_string(i) + ".txt");
                 }
                 break;
             case CASO_ORDENADO_DESC:
-                for(int i = 0; i < MAX_N; i*=2){
-                    generarCaso_OrdenadoAscendentemente(v,n);
-                    escribirVectorEnArchivo(v,"OrdenadoDesc_" + to_string(n) + ".txt");
+                for(int i = 2; i < MAX_N; i*=2){
+                    generarCaso_OrdenadoDescendentemente(v,i);
+                    escribirVectorEnArchivo(v,"OrdenadoDesc_" + to_string(i) + ".txt");
                 }
                 break;
             case CASO_PARC_ORDENADO:
-                int ordenados[3] = {10,20,50}
-                for(int j = 0; i < 3; j++){
+                
+                for(int j = 0; j < 3; j++){
                     int o = ordenados[j];
-                    for(int i = 0; i < MAX_N; i*=2){
-                        int nDesordenados = (int32_t) (((int64_t) n)*o/100);
-                        generarCaso_OrdenadoAscendentemente(v,n,nDesordenados);
-                        escribirVectorEnArchivo(v,"ParcOrdenado_" + to_string(nDesordenados) + "%_" + to_string(n) + ".txt");
+                    for(int i = 2; i < MAX_N; i*=2){
+                        int nDesordenados = (int32_t) (((int64_t) i)*o/100);
+                        generarCaso_ParcialmenteOrdenado(v,i,nDesordenados);
+                        escribirVectorEnArchivo(v,"ParcOrdenado_" + to_string(o) + "%_" + to_string(i) + ".txt");
                     }
                 }
                 break;
             case CASO_REPETIDOS:
-                int repetidos[4] = {10,20,50,100}
-                for(int j = 0; i < 4; j++){
+                for(int j = 0; j < 4; j++){
                     int r = repetidos[j];
-                    for(int i = 0; i < MAX_N; i*=2){
-                        int nRepetidos = (int32_t) (((int64_t) n)*r/100);
-                        generarCaso_OrdenadoAscendentemente(v,n,nRepetidos);
-                        escribirVectorEnArchivo(v,"Repetidos_" + to_string(nRepetidos) + "%_" + to_string(n) + ".txt");
+                    for(int i = 2; i < MAX_N; i*=2){
+                        int nRepetidos = (int32_t) (((int64_t) i)*r/100);
+                        generarCaso_DatosRepetidos(v,i,nRepetidos);
+                        escribirVectorEnArchivo(v,"Repetidos_" + to_string(r) + "%_" + to_string(i) + ".txt");
                     }
                 }
+
                 break;
             default:
                 cerr << "Ejecución incorrecta\n";
@@ -206,20 +218,6 @@ int main(int argc, char* argv[]){
     }
 
 }
-
-
-void generarFicheros(int n,int n_repetidos,int n_desordenados){
-    vector<int> v;
-    generarCasoNumerosAleatoriosPequenos(n,v);
-    escribirVectorEnArchivo(v,"aleatorios.txt");
-    generarCasoInversamenteOrdenado(n,v);
-    escribirVectorEnArchivo(v,"inversamenteOrdenados.txt");
-    generarCasoCasiOrdenado(n,n_desordenados,v);
-    escribirVectorEnArchivo(v,"casiOrdenado.txt");
-    generarCasoDatosRepetidos(n,n_repetidos,v);
-    escribirVectorEnArchivo(v,"datosRepetidos.txt");
-}
-
 
 
 

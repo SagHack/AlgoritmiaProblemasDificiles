@@ -26,7 +26,6 @@ using namespace std;
  */
 void quicksortRec(vector<int>& v, int inicio, int fin);
 
-
 /* 
  * Precondición:    0 <= inicio <= fin <= |v|-1.
  * Postcondición:   devuelve el índice, entre inicio y fin, del pivote elegido para particionar v,
@@ -35,7 +34,6 @@ void quicksortRec(vector<int>& v, int inicio, int fin);
                     índice devuelto más uno y fin.
  */
 int particion(vector<int>& v, int inicio, int fin);
-
 
 /* 
  * Precondición:    0 <= inicio <= fin <= |v|-1.
@@ -47,7 +45,6 @@ int particion(vector<int>& v, int inicio, int fin);
                         los valores de los tres índices.
  */
 int elegirPivote(vector<int> v, int inicio, int fin);
-
 
 /* 
  * Precondición:    
@@ -107,7 +104,6 @@ void quicksortRec(vector<int>& v, int inicio, int fin){
     }
 }
 
-
 /* 
  * Precondición:    0 <= inicio <= fin <= |v|-1.
  * Postcondición:   devuelve el índice, entre inicio y fin, del pivote elegido para particionar v,
@@ -131,7 +127,6 @@ int particion(vector<int>& v, int inicio, int fin){
     return index;
 
 }
-
 
 /* 
  * Precondición:    0 <= inicio <= fin <= |v|-1.
@@ -163,7 +158,6 @@ int elegirPivote(vector<int> v, int inicio, int fin){
     }
     return fin;
 }
-
 
 /* 
  * Precondición:    

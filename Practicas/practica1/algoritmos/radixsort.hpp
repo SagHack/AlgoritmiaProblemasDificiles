@@ -23,8 +23,8 @@ using namespace std;
 void radixsort(vector<int>& v);
 
 /* 
- * Precondición:    los elementos del vector v son cadenas que representan
-                    números en formato entero.
+ * Precondición:    los elementos de v son cadenas que representan
+ *                  números en formato entero.
  * Postcondición:   ordena el vector v de forma ascendente 
  *                  mediante el algoritmo de ordenación radixsort.
  */

@@ -293,7 +293,7 @@ int main(int argc, char* argv[]) {
     especificando n, n_repetidos y n_desordenados respectivamente */
     //generarFicheros(32768,32768/10,32768/10);
     
-    cout << "Caso de prueba 1: vector con N=16384 números aleatorios:" << endl;
+    cout << "Caso de prueba 1: vector con N=16384 números aleatorios:" << endl; 
     cout << "Caso de prueba 2: vector con N=16384 números aleatorios con una décima parte desordenada:" << endl;
     cout << "Caso de prueba 3: vector con N=16384 números aleatorios con una décima parte repetida:" << endl;
     cout << "Caso de prueba 4: vector con N=16384 números inversamente ordenados:" << endl;

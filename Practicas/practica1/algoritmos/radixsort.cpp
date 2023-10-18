@@ -52,36 +52,29 @@ void iteracionRadixsort(vector<int>& v, int exp);
  */
 void iteracionRadixsort(vector<string>& v, int cifra);
 
+/* 
+ * Precondición:    
+ * Postcondición:   almacena en neg los números negativos de original y en pos los 
+ *                  números positivos de original. Tanto en neg como en pos los números 
+ *                  se almacenan como positivos.
+ */
+void separarNegativosPositivos(const vector<int>& original, vector<int>& neg, vector<int>& pos);
+
+/* 
+ * Precondición:    los elementos de original son cadenas que representan
+ *                  números en formato entero.
+ * Postcondición:   almacena en neg los números negativos de original y en pos los 
+ *                  números positivos de original. Tanto en neg como en pos los números 
+ *                  se almacenan como positivos.
+ */
+void separarNegativosPositivos(const vector<string>& original, vector<string>& neg, vector<string>& pos);
+
 
 /****************************************************************************************************/
 
 
 /****************************************************************************************************/
 /*                Implementación de las funciones de ordenación según algoritmo radixsort           */
-
-
-
-// Separa los negativos y positivos en dos vectores. Pero en ambos vectores se guardan de forma positiva
-void separarNegativosPositivos(const vector<int>& original, vector<int>& neg, vector<int>& pos){
-    for (int num : original) {
-        if (num < 0) {
-            neg.push_back(abs(num)); 
-        } else {
-            pos.push_back(num); 
-        }
-    }
-}
-
-void separarNegativosPositivos(const vector<string>& original, vector<string>& neg, vector<string>& pos){
-    cout << "1" << endl;
-    for (string num : original) {
-        if (num[0] == '-') {
-            neg.push_back(num.substr(1)); // Eliminamos el primer caracter, el signo negativo
-        } else {
-            pos.push_back(num); 
-        }
-    }
-}
 
 
 /* 
@@ -132,18 +125,8 @@ void radixsort(vector<int>& v)
         
 }
 
-
-
-void printStringVector(const std::vector<std::string>& vec) {
-    cout << "vector a imprimir" << endl;
-    for (const std::string& element : vec) {
-        std::cout << element << " ";
-    }
-    std::cout << std::endl;
-}
-
 /* 
- * Precondición:    los elementos del vector v son cadenas que representan
+ * Precondición:    los elementos de v son cadenas que representan
                     números en formato entero.
  * Postcondición:   ordena el vector v de forma ascendente 
  *                  mediante el algoritmo de ordenación radixsort.
@@ -158,7 +141,7 @@ void radixsort(vector<string>& v)
         separarNegativosPositivos(v,neg,pos);
 
         if(pos.size() > 1){
-            // Obtenemos el máximo de los números del vector de positivos.
+            // Obtenemos el máximo de cifras de los números del vector de positivos.
             int max_pos = obtenerLongitudMaxima(pos);
 
             // Vamos realizando las iteraciones del algoritmo de ordenación radixsort.
@@ -168,7 +151,10 @@ void radixsort(vector<string>& v)
         }
 
         if(neg.size() > 1){
+
+            // Obtenemos el máximo de cifras de los números del vector de negativos.
             int max_neg = obtenerLongitudMaxima(neg);
+            
             // Vamos realizando las iteraciones del algoritmo de ordenación radixsort.
             for (int c = 1; c <= max_neg; c++){
                 iteracionRadixsort(neg, c);
@@ -190,6 +176,7 @@ void radixsort(vector<string>& v)
     
         
 }
+
 
 /****************************************************************************************************/
 
@@ -287,10 +274,8 @@ void iteracionRadixsort(vector<int>& v, int exp)
 
 // /* 
 //  * Precondición:    el número de elementos de v tiene que ser mayor que 0. 
-//  * Postcondición:   ordena el vector v de forma ascendente según el valor de una 
+//  * Postcondición:   ordena el vector v de forma ascendente según el valor de 
 //  *                  cifra de los números del vector.
-//  *                  La cifra con la que ordenar en la iteración es igual al 
-//  *                  logaritmo en base 10 de exp.
 //  */
 void iteracionRadixsort(vector<string>& v, int cifra)
 {   
@@ -366,6 +351,38 @@ void iteracionRadixsort(vector<string>& v, int cifra)
     }
 }
 
+/* 
+ * Precondición:    
+ * Postcondición:   almacena en neg los números negativos de original y en pos los 
+ *                  números positivos de original. Tanto en neg como en pos los números 
+ *                  se almacenan como positivos.
+ */
+void separarNegativosPositivos(const vector<int>& original, vector<int>& neg, vector<int>& pos){
+    for (int num : original) {
+        if (num < 0) {
+            neg.push_back(abs(num)); 
+        } else {
+            pos.push_back(num); 
+        }
+    }
+}
+
+/* 
+ * Precondición:    los elementos de original son cadenas que representan
+ *                  números en formato entero.
+ * Postcondición:   almacena en neg los números negativos de original y en pos los 
+ *                  números positivos de original. Tanto en neg como en pos los números 
+ *                  se almacenan como positivos.
+ */
+void separarNegativosPositivos(const vector<string>& original, vector<string>& neg, vector<string>& pos){
+    for (string num : original) {
+        if (num[0] == '-') {
+            neg.push_back(num.substr(1)); // Eliminamos el primer caracter, el signo negativo
+        } else {
+            pos.push_back(num); 
+        }
+    }
+}
 
 
 /****************************************************************************************************/

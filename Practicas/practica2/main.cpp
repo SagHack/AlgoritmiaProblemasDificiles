@@ -17,11 +17,13 @@ class VectorOcurrencias{
         VectorOcurrencias(int n, int valor) : v(n,valor) {}
 };
 
-void generarCuadradoLatino(string ficheroSalida,int n, double porcentaje){
+bool generarCuadradoLatino(string ficheroSalida,int n, double porcentaje){
     ofstream salida(ficheroSalida);
     if(salida.is_open()){
 
-        int i = 0, j = 0;
+        int i = 0, j = 0, asteriscos = 0;
+        int MAX_ASTERISCOS = ceil(((n * n)*porcentaje) / 100.0);
+        int MIN_ASTERISCOS = ((n * n)*porcentaje) / 100.0;
         vector<int> valores_posibles(2*n,(1<<n)-1);
         
         random_device nd;
@@ -38,17 +40,22 @@ void generarCuadradoLatino(string ficheroSalida,int n, double porcentaje){
             string s;
             if(random < porcentaje){
                 s = "*";
+                asteriscos++;
             }
             else{
                 int valido;
                 int num;
                 int mascara;
+                int nrep = 0;
                 do{
                     num = distribucionN(genN);
                     mascara = 1 << (num-1);
                     valido = valores_posibles[i] & mascara & valores_posibles[n+j];
+                    if((valores_posibles[i] & valores_posibles[n+j]) == 0) return false;
+
                 } while(valido == 0);
                 valores_posibles[i] &= ~mascara;
+                valores_posibles[n+j] &= ~mascara;
                 s = to_string(num);
             }
 
@@ -62,7 +69,12 @@ void generarCuadradoLatino(string ficheroSalida,int n, double porcentaje){
             }
         }
 
+        if(MIN_ASTERISCOS > asteriscos || asteriscos > MAX_ASTERISCOS){
+            return false;
+        }
+
     }
+    return true;
 }
 
 void leerFichero(string ficheroEntrada,int n, vector<int>& vals_filas,vector<int>& vals_columnas){
@@ -151,18 +163,15 @@ bool solveLatinSquare(std::vector<std::vector<char>>& square) {
 }
 
 int main(int argc, char* argv[]) {
-    cout << "Antes";
     if(argc != 4){
-        cerr << "Mal";
         exit(1);
     }
-    cout << "Bien";
 
     string ficheroSalida = argv[1];
     int n = stoi(argv[2]);
     double p = stod(argv[3]);
 
-    generarCuadradoLatino(ficheroSalida,n,p);
+    while(!generarCuadradoLatino(ficheroSalida,n,p));
     
     /*std::ifstream inputFile("entrada.txt");
     std::ofstream outputFile("salida.txt");

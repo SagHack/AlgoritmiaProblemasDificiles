@@ -7,6 +7,7 @@
 #include <ctime>
 #include <cstdlib>
 #include <random>
+#include <stdio.h>
 using namespace std;
 
 #define SEPARADOR ' '
@@ -17,67 +18,12 @@ class VectorOcurrencias{
         VectorOcurrencias(int n, int valor) : v(n,valor) {}
 };
 
-bool generarCuadradoLatino(string ficheroSalida,int n, double porcentaje){
-    ofstream salida(ficheroSalida);
-    if(salida.is_open()){
+struct OcurrenciasValor{
+    int OcurrenciasColumnas, OcurrenciasFilas;
+    OcurrenciasValor(int num) : OcurrenciasColumnas(num), OcurrenciasFilas(num){}
+};
 
-        int i = 0, j = 0, asteriscos = 0;
-        int MAX_ASTERISCOS = ceil(((n * n)*porcentaje) / 100.0);
-        int MIN_ASTERISCOS = ((n * n)*porcentaje) / 100.0;
-        vector<int> valores_posibles(2*n,(1<<n)-1);
-        
-        random_device nd;
-        mt19937 genP(nd());
-        uniform_int_distribution<int> distribucionN(1,n);
-
-        random_device pd;
-        mt19937 genN(pd());
-        uniform_real_distribution<double> distribucionP(1.0,100.0);
-
-
-        while(i < n){
-            double random = distribucionP(genP);
-            string s;
-            if(random < porcentaje){
-                s = "*";
-                asteriscos++;
-            }
-            else{
-                int valido;
-                int num;
-                int mascara;
-                int nrep = 0;
-                do{
-                    num = distribucionN(genN);
-                    mascara = 1 << (num-1);
-                    valido = valores_posibles[i] & mascara & valores_posibles[n+j];
-                    if((valores_posibles[i] & valores_posibles[n+j]) == 0) return false;
-
-                } while(valido == 0);
-                valores_posibles[i] &= ~mascara;
-                valores_posibles[n+j] &= ~mascara;
-                s = to_string(num);
-            }
-
-            if(++j == n){
-                salida << s << endl;
-                i++;
-                j = 0;
-            }
-            else{
-                salida << s << " ";
-            }
-        }
-
-        if(MIN_ASTERISCOS > asteriscos || asteriscos > MAX_ASTERISCOS){
-            return false;
-        }
-
-    }
-    return true;
-}
-
-void leerFichero(string ficheroEntrada,int n, vector<int>& vals_filas,vector<int>& vals_columnas){
+void leerFichero(string ficheroEntrada,int n, vector<OcurrenciasValor>& ocurrenciasNum){
     ifstream entrada(ficheroEntrada);
     if(entrada.is_open()){
         string s;
@@ -87,49 +33,95 @@ void leerFichero(string ficheroEntrada,int n, vector<int>& vals_filas,vector<int
         vector<VectorOcurrencias> ocurrencias(2*n,v);
         int i = 0, j = 0;
 
-        while(getline(entrada,s,SEPARADOR)){
+        while(getline(entrada,s)){
             stringstream linea(s);
             while(getline(linea,s,SEPARADOR)){
                 if(s == "*"){
-                    cout << s;
                 }
                 else{
-                    int num;
+                    int num,mascaraFila,mascaraColumna;
                     try{
                         num = stoi(s);
                     } catch (const invalid_argument& e){
-
+                        cerr << "El elemento de la fila " << i+1 << " y columna " << j+1 << " no es * o un número\n";
+                        exit(1);
                     }
-                    if(num >= 1 || num <= n){
-                        if(++ocurrencias[i].v[num] > 1){
-                            cerr << "";
-                            exit(1);
-                        }
-                        if(++ocurrencias[n+j].v[num] > 1){
-                            cerr << "";
-                            exit(1);
-                        }
 
-                        valores_posibles[i] &= ~(1 << num-1);
-                        valores_posibles[n+j] &= ~(1 << num-1);
+                    if(num >= 1 || num <= n){
+                        mascaraFila = (1 << i);
+                        mascaraColumna = (1 << j);
+
+                        if(ocurrenciasNum[num-1].OcurrenciasFilas & mascaraFila) 
+                        ocurrenciasNum[num-1].OcurrenciasFilas &= ~mascaraFila;
+                        else{
+                            cerr << "En la fila " << i+1 << " hay dos o más columnas con el número " << num << endl;
+                            exit(1);
+                        }
+                        if(ocurrenciasNum[num-1].OcurrenciasColumnas & mascaraColumna) 
+                        ocurrenciasNum[num-1].OcurrenciasColumnas &= ~mascaraColumna;
+                        else{
+                            cerr << "En la columna " << j+1 << " hay dos o más filas con el número " << num << endl;
+                            exit(1);
+                        }
 
                     }
                     else{
-                        cerr << "";
+                        cerr << "El número de la fila " << i+1 << " y columna " << j+1 << " no es número entre 1 y " << n << endl;
                         exit(1);
                     }
                 }
                 j++;
                 
             }
+            if(j!=n){
+                cerr << "La fila " << i+1 << " no tiene " << n << " columnas\n";
+                exit(1);
+            }
             i++;
             j = 0;
         
         }
 
+        if(i!=n){
+            cout << i;
+            cerr << "No hay " << n << " filas\n";
+            exit(1);
+        }
+
     }
 }
 
+
+
+void printBinary(int number,int n){
+    if (number == 0) {
+        printf("0");
+        return;
+    }
+    int maskMax = (1<<n);
+    int mask = 1; // Máscara para el bit más significativo de un entero de 32 bits
+
+    while (mask < maskMax) {
+        if (number & mask) {
+            printf("1");
+        } else {
+            printf("0");
+        }
+        mask <<= 1;
+    }
+}
+
+void printOcurrencias(vector<OcurrenciasValor>& ocurrenciasNum){
+    int n = ocurrenciasNum.size();
+    for(int i = 0; i < n; i++){
+        cout << "Número : " << i+1 << endl;
+        cout << "\tfilas: ";
+        printBinary(ocurrenciasNum[i].OcurrenciasFilas,n);
+        cout << "\n\tfilas: ";
+        printBinary(ocurrenciasNum[i].OcurrenciasColumnas,n);
+        cout << endl;
+    }
+}
 
 
 bool isValid(std::vector<std::vector<char>>& square, int row, int col, char num) {
@@ -163,15 +155,19 @@ bool solveLatinSquare(std::vector<std::vector<char>>& square) {
 }
 
 int main(int argc, char* argv[]) {
-    if(argc != 4){
+    
+    if(argc != 3){
+        cerr << "Ejecución correcta: ./main <fichero_entrada> <dimensión>";
         exit(1);
     }
 
-    string ficheroSalida = argv[1];
+    string ficheroEntrada = argv[1];
     int n = stoi(argv[2]);
-    double p = stod(argv[3]);
 
-    while(!generarCuadradoLatino(ficheroSalida,n,p));
+    vector<OcurrenciasValor> ocurrenciasNum(n,OcurrenciasValor((1 << n)-1));
+
+    leerFichero(ficheroEntrada,n,ocurrenciasNum);
+    printOcurrencias(ocurrenciasNum);
     
     /*std::ifstream inputFile("entrada.txt");
     std::ofstream outputFile("salida.txt");

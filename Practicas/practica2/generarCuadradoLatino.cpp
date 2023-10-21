@@ -2,7 +2,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
-
+#include <ctime>
 
 
 #include <random>
@@ -17,17 +17,12 @@ bool generarCuadradoLatino(string ficheroSalida,int n, double porcentaje){
         int MIN_ASTERISCOS = ((n * n)*porcentaje) / 100.0;
         vector<int> valores_posibles(2*n,(1<<n)-1);
         
-        random_device nd;
-        mt19937 genP(nd());
-        uniform_int_distribution<int> distribucionN(1,n);
-
-        random_device pd;
-        mt19937 genN(pd());
-        uniform_real_distribution<double> distribucionP(1.0,100.0);
+        srand(time(NULL));
 
 
         while(i < n){
-            double random = distribucionP(genP);
+            double random = static_cast<double>(rand())/RAND_MAX;
+            random = random * 100.0;
             string s;
             if(random < porcentaje){
                 s = "*";
@@ -39,7 +34,7 @@ bool generarCuadradoLatino(string ficheroSalida,int n, double porcentaje){
                 int mascara;
                 int nrep = 0;
                 do{
-                    num = distribucionN(genN);
+                    num = rand()%10 + 1;
                     mascara = 1 << (num-1);
                     valido = valores_posibles[i] & mascara & valores_posibles[n+j];
                     if((valores_posibles[i] & valores_posibles[n+j]) == 0) return false;

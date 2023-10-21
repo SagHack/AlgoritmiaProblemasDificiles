@@ -1,0 +1,1 @@
+/usr/local/gcc/bin/c++ CMakeFiles/minisat-simp.dir/minisat/simp/Main.cc.o -o minisat-simp  libminisat.a 

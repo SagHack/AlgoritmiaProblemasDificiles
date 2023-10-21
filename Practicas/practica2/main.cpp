@@ -1,45 +1,48 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <algorithm>
 #include <string>
 #include <sstream>
 #include <ctime>
 #include <cstdlib>
-#include <random>
-#include <stdio.h>
+#include <tuple>
+#include <map> 
+#include <math.h>
 using namespace std;
+
 
 #define SEPARADOR ' '
 
-class VectorOcurrencias{
-    public: 
-        vector<int> v;
-        VectorOcurrencias(int n, int valor) : v(n,valor) {}
+
+struct CoordenadasCelda{
+    int fila,columna;
 };
 
-struct OcurrenciasValor{
-    int OcurrenciasColumnas, OcurrenciasFilas;
-    OcurrenciasValor(int num) : OcurrenciasColumnas(num), OcurrenciasFilas(num){}
+struct CuadradoLatino{
+    vector<CoordenadasCelda> celdasRellenar;
+    vector<int> valoresFila;
+    vector<int> valoresColumna;
+    CuadradoLatino(int n) : valoresFila(n,(1<<n)-1), valoresColumna(n,(1<<n)-1), celdasRellenar(){}
 };
 
-void leerFichero(string ficheroEntrada,int n, vector<OcurrenciasValor>& ocurrenciasNum){
+void leerFichero(string ficheroEntrada,int n, vector<CuadradoLatino>& CL){
     ifstream entrada(ficheroEntrada);
     if(entrada.is_open()){
         string s;
-        VectorOcurrencias v(n,0);
         int vn = (1 << n) -1;
-        vector<int> valores_posibles(2*n,vn);
-        vector<VectorOcurrencias> ocurrencias(2*n,v);
         int i = 0, j = 0;
+        CoordenadasCelda c;
 
         while(getline(entrada,s)){
             stringstream linea(s);
             while(getline(linea,s,SEPARADOR)){
                 if(s == "*"){
+                    c.fila = i;
+                    c.columna = j;
+                    CL.celdasRellenar.push_back(c);
                 }
                 else{
-                    int num,mascaraFila,mascaraColumna;
+                    int num,mascara;
                     try{
                         num = stoi(s);
                     } catch (const invalid_argument& e){
@@ -48,17 +51,16 @@ void leerFichero(string ficheroEntrada,int n, vector<OcurrenciasValor>& ocurrenc
                     }
 
                     if(num >= 1 || num <= n){
-                        mascaraFila = (1 << i);
-                        mascaraColumna = (1 << j);
+                        mascara = 1 << (num-1);
 
-                        if(ocurrenciasNum[num-1].OcurrenciasFilas & mascaraFila) 
-                        ocurrenciasNum[num-1].OcurrenciasFilas &= ~mascaraFila;
+                        if(CL.valoresFila[i] & mascara) 
+                        CL.valoresFila[i] &= ~mascara;
                         else{
                             cerr << "En la fila " << i+1 << " hay dos o más columnas con el número " << num << endl;
                             exit(1);
                         }
-                        if(ocurrenciasNum[num-1].OcurrenciasColumnas & mascaraColumna) 
-                        ocurrenciasNum[num-1].OcurrenciasColumnas &= ~mascaraColumna;
+                        if(CL.valoresColumna[i] & mascara) 
+                        CL.valoresColumna[i] &= ~mascara;
                         else{
                             cerr << "En la columna " << j+1 << " hay dos o más filas con el número " << num << endl;
                             exit(1);
@@ -93,35 +95,54 @@ void leerFichero(string ficheroEntrada,int n, vector<OcurrenciasValor>& ocurrenc
 
 
 
-void printBinary(int number,int n){
-    if (number == 0) {
-        printf("0");
-        return;
-    }
-    int maskMax = (1<<n);
-    int mask = 1; // Máscara para el bit más significativo de un entero de 32 bits
+using KeyTuple = tuple<int,int,int>;
 
-    while (mask < maskMax) {
-        if (number & mask) {
-            printf("1");
-        } else {
-            printf("0");
+
+
+void numVariable(map<KeyTuple,int>& variables,int& numVariables,int i, int j, int k){
+    
+    KeyTuple key = make_tuple(i,j,k);
+    auto iter = variables.find(key);
+    int resul;
+    if(iter == variables.end()){
+        resul = numVariables;
+        variables[key] = ++numVariables;
+        
+    }
+    else resul = iter->second;
+    return resul;
+    
+}
+
+struct CuadradoLatinoClauses{
+    vector<string> clausesFila;
+    vector<string> clausesColumna;
+    vector<string> clausesCeldas;
+    CuadradoLatinoClauses(int n) : clausesFila(n*n,""), clausesColumna(n*n,""), clausesCeldas(){}
+};
+
+void elaborarClausesCL(string ficheroSalida,const vector<CuadradoLatino>& CL,map<KeyTuple,int>& variables,int& numVariables,vector<CuadradoLatinoClauses>& CLC){
+    ofstream salida(ficheroSalida);
+    if(salida.is_open()){
+        int n = CL.celdasRellenar.size();
+        for(int i = 0; i < n; i++){
+            int fila = CL.celdasRellenar[i].fila;
+            int columna = CL.celdasRellenar[i].columna;
+            int nums = CL.valoresFila[fila] & CL.valoresColumna[columna];
+            CL.clausesCeldas.push_back("");
+            while(nums > 0){
+                int k = log2(static_cast<double>(nums));
+                int variable = numVariable(variables,numVariables,fila,columna,k);
+                nums -= (2 << k);
+
+            }
         }
-        mask <<= 1;
+    }
+    else{
+        exit(1);
     }
 }
 
-void printOcurrencias(vector<OcurrenciasValor>& ocurrenciasNum){
-    int n = ocurrenciasNum.size();
-    for(int i = 0; i < n; i++){
-        cout << "Número : " << i+1 << endl;
-        cout << "\tfilas: ";
-        printBinary(ocurrenciasNum[i].OcurrenciasFilas,n);
-        cout << "\n\tfilas: ";
-        printBinary(ocurrenciasNum[i].OcurrenciasColumnas,n);
-        cout << endl;
-    }
-}
 
 
 bool isValid(std::vector<std::vector<char>>& square, int row, int col, char num) {
@@ -164,10 +185,13 @@ int main(int argc, char* argv[]) {
     string ficheroEntrada = argv[1];
     int n = stoi(argv[2]);
 
-    vector<OcurrenciasValor> ocurrenciasNum(n,OcurrenciasValor((1 << n)-1));
+    CuadradoLatino CL(n);
 
-    leerFichero(ficheroEntrada,n,ocurrenciasNum);
-    printOcurrencias(ocurrenciasNum);
+    leerFichero(ficheroEntrada,n,CL);
+
+    vector<CuadradoLatinoClauses> CLC(n);
+
+    elaborarClausesCL()
     
     /*std::ifstream inputFile("entrada.txt");
     std::ofstream outputFile("salida.txt");

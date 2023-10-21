@@ -1,0 +1,1 @@
+/usr/local/gcc/bin/c++ CMakeFiles/minisat.dir/minisat/core/Main.cc.o -o minisat  libminisat.a 

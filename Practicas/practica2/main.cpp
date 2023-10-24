@@ -129,6 +129,11 @@ void elaborarClausesCL(const CuadradoLatino& CL,map<KeyTuple,int>& variables,int
         int columna = CL.celdasRellenar[i].columna;
         uint64_t nums = CL.valoresFila[fila] & CL.valoresColumna[columna];
         CLC.clausesCeldas.push_back("");
+        if(nums > 0){
+            cout << "El cuadrado latino es unsatisfiable.\nLa celda (" << fila+1 << "," << columna+1 << ")\n no pueder tener ningún valor posible.\n";
+ 
+            exit(1);
+        }
         while(nums > 0){
             int k = log2(static_cast<double>(nums));
             //cout << "Celda fila: " << fila << " columna: " << columna << " k: " << k << endl;

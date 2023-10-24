@@ -8,63 +8,132 @@
 #include <random>
 using namespace std;
 
-bool generarCuadradoLatino(string ficheroSalida,int n, double porcentaje){
-    ofstream salida(ficheroSalida);
-    if(salida.is_open()){
-
-        int i = 0, j = 0, asteriscos = 0;
-        int MAX_ASTERISCOS = ceil(((n * n)*porcentaje) / 100.0);
-        int MIN_ASTERISCOS = ((n * n)*porcentaje) / 100.0;
-        vector<int> valores_posibles(2*n,(1<<n)-1);
-        
-        srand(time(NULL));
 
 
-        while(i < n){
-            double random = static_cast<double>(rand())/RAND_MAX;
-            random = random * 100.0;
-            string s;
-            if(random < porcentaje){
-                s = "*";
-                asteriscos++;
-            }
-            else{
-                int valido;
-                int num;
-                int mascara;
-                int nrep = 0;
-                do{
-                    num = rand()%10 + 1;
-                    mascara = 1 << (num-1);
-                    valido = valores_posibles[i] & mascara & valores_posibles[n+j];
-                    if((valores_posibles[i] & valores_posibles[n+j]) == 0) return false;
 
-                } while(valido == 0);
-                valores_posibles[i] &= ~mascara;
-                valores_posibles[n+j] &= ~mascara;
-                s = to_string(num);
-            }
-
-            if(++j == n){
-                salida << s << endl;
-                i++;
-                j = 0;
-            }
-            else{
-                salida << s << " ";
-            }
+struct PosiblesValores{
+    vector<int> v;
+    PosiblesValores(int n) {
+        for(int i = 0; i < n ; i++){
+            v.push_back(i+1);
         }
-
-        if(MIN_ASTERISCOS > asteriscos || asteriscos > MAX_ASTERISCOS){
-            return false;
-        }
-
     }
+};
+
+
+void mostrarVL(const PosiblesValores& VL) {
+    cout << "\tValores: ";
+    for(const auto& pv : VL.v){
+        cout << pv << " ";
+    }
+    cout << endl;
+}
+
+void borrarPosibleValorRec(PosiblesValores& pv, int valor, int inicio, int final){
+    //cout << "\t\t\tBorrar valor: " << valor << " inicio: " << inicio << " final: " << final << endl;
+    if(inicio == final){
+        if(pv.v[inicio] == valor){
+            //cout << "\t\t\t\tBorrar número: " << *(pv.v.begin() + inicio) << endl;
+            pv.v.erase(pv.v.begin() + inicio);
+        }
+    }
+    else{
+        int medio = (inicio+final)/2;
+        //cout << "\t\t\t\tMedio: " << medio << " numero: " << pv.v[medio] << endl;
+        if(pv.v[medio] == valor){
+            //cout << "\t\t\t\tBorrar número: " << *(pv.v.begin() + medio) << endl;
+            pv.v.erase(pv.v.begin() + medio);
+        }
+        else if(valor < pv.v[medio]){
+            if(inicio < medio) borrarPosibleValorRec(pv,valor,inicio,medio-1);
+        }
+        else{
+            borrarPosibleValorRec(pv,valor,medio+1,final); 
+        }
+    }
+}
+
+bool borrarPosibleValor(PosiblesValores& pv,int valor){
+    int n = pv.v.size();
+    if(n <= 0){
+        return false;
+    }
+    borrarPosibleValorRec(pv,valor,0,n-1);
     return true;
 }
 
+bool generarCuadradoLatinoCompleto(vector<string>& CL, int n){
+    vector<PosiblesValores> valoresCL(n*n,PosiblesValores(n));
+    srand(time(NULL));
+    for(int i = 0; i < n; i++){
+        for(int j = 0; j < n; j++){
+            //cout << "Celda: (" << i+1 << "," << j+1 << ")\n";
+            PosiblesValores aux = valoresCL[i*n+j];
+            int maxVals = aux.v.size();
+            if(maxVals == 0) return false;
+            int indice_aleatorio = rand() % maxVals;
+            int num = aux.v[indice_aleatorio];
+            //cout << "\tIndice: " << indice_aleatorio << ", Num: " << num << endl;
+            CL[i*n+j] = to_string(num);
+            for(int k = i+1; k < n; k++){
+                //cout << "\tBorrar valor: " << num << " en celda: (" << k+1 << "," << j+1 << ")\n";
+                borrarPosibleValor(valoresCL[k*n+j],num);
+            }
+            
+            for(int k = j; k < n; k++){
+                //cout << "\tBorrar valor: " << num << " en celda: (" << i+1 << "," << k+1 << ")\n";
+                borrarPosibleValor(valoresCL[i*n+k],num);
+            }
+
+        }
+    }
+    return true;
+
+}
+
+
+void generarCuadradoLatinoParcial(vector<string>& CL,const int n,const double porcentaje){
+    
+    int fila = 0, columna = 0, asteriscos = ((n * n)*porcentaje) / 100.0;
+    srand(time(NULL));
+
+    for(int i = 0; i < asteriscos; i++){
+        fila = rand() % n;
+        columna = rand() % n;
+        CL[fila*n + columna] = "*";
+    }
+
+}
+
+void escribirCuadradoLatinoParcial(const vector<string>& CL,const string ficheroSalida,const int n){
+    ofstream salida(ficheroSalida);
+    if(salida.is_open()){
+
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < n; j++){
+                salida << CL[i*n+j] << " ";
+            }
+        salida << endl;
+    }
+
+    }
+}
+
+void mostrarCL(const vector<string>& CL, int n) {
+    for(int i = 0; i < n; i++){
+        for(int j = 0; j < n; j++){
+            cout << CL[i*n+j] << " ";
+        }
+        cout << endl;
+    }
+}
+
+
+
+
 
 int main(int argc, char* argv[]) {
+
     if(argc != 4){
         exit(1);
     }
@@ -72,5 +141,8 @@ int main(int argc, char* argv[]) {
     string ficheroSalida = argv[1];
     int n = stoi(argv[2]);
     double p = stod(argv[3]);
-    while(!generarCuadradoLatino(ficheroSalida,n,p));
+    vector<string> CL(n*n,"");
+    while(!generarCuadradoLatinoCompleto(CL,n));
+    generarCuadradoLatinoParcial(CL,n,p);
+    escribirCuadradoLatinoParcial(CL,ficheroSalida,n);
 }

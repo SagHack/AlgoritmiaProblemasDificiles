@@ -8,6 +8,7 @@
 #include <tuple>
 #include <map> 
 #include <math.h>
+#include "minisat-master/minisat/core/Solver.h"
 using namespace std;
 
 
@@ -25,11 +26,10 @@ struct CuadradoLatino{
     CuadradoLatino(int n) : valoresFila(n,(1<<n)-1), valoresColumna(n,(1<<n)-1), celdasRellenar(){}
 };
 
-void leerFichero(string ficheroEntrada,int n, CuadradoLatino& CL){
+void leerFichero(string ficheroEntrada,int n, CuadradoLatino& CL, vector<int>& v){
     ifstream entrada(ficheroEntrada);
     if(entrada.is_open()){
         string s;
-        int vn = (1 << n)-1;
         int i = 0, j = 0;
         CoordenadasCelda c;
 
@@ -67,6 +67,8 @@ void leerFichero(string ficheroEntrada,int n, CuadradoLatino& CL){
                             exit(1);
                         }
 
+                       v[i*n+j] = num;
+
                     }
                     else{
                         cerr << "El número de la fila " << i+1 << " y columna " << j+1 << " no es número entre 1 y " << n << endl;
@@ -94,17 +96,18 @@ void leerFichero(string ficheroEntrada,int n, CuadradoLatino& CL){
 }
 
 
-
+using namespace Minisat;
 using KeyTuple = tuple<int,int,int>;
 
 
-int addVariable(map<KeyTuple,int>& variables,int& numVariables,int i, int j, int k){
+Var addVariable(map<KeyTuple,Var>& variables,Solver& s,int i, int j, int k){
     KeyTuple key = make_tuple(i,j,k);
-    variables[key] = ++numVariables;
-    return numVariables;
+    Minisat::Var v = s.newVar();
+    variables[key] = v;
+    return v;
 }
 
-int numVariable(map<KeyTuple,int>& variables,int& numVariables,int i, int j, int k){
+Var numVariable(map<KeyTuple,Var>& variables,int i, int j, int k){
     KeyTuple key = make_tuple(i,j,k);
     auto iter = variables.find(key);
     if(iter != variables.end()) return iter->second;
@@ -113,14 +116,14 @@ int numVariable(map<KeyTuple,int>& variables,int& numVariables,int i, int j, int
 }
 
 struct CuadradoLatinoClauses{
-    vector<string> clausesFila;
-    vector<string> clausesColumna;
-    vector<string> clausesCeldas;
-    CuadradoLatinoClauses(int n) : clausesFila(n*n,""), clausesColumna(n*n,""), clausesCeldas(){}
+    vector<vec<Lit>> clausesFila;
+    vector<vec<Lit>> clausesColumna;
+    vector<vec<Lit>> clausesCeldas;
+    CuadradoLatinoClauses(int n) : clausesFila(n*n,vec<Lit>()), clausesColumna(n*n,vec<Lit>()), clausesCeldas(0,vec<Lit>()){}
 };
 
 
-void elaborarClausesCL(const CuadradoLatino& CL,map<KeyTuple,int>& variables,int& numVariables,CuadradoLatinoClauses& CLC){
+void elaborarClausesCL(const CuadradoLatino& CL,map<KeyTuple,Minisat::Var>& variables,CuadradoLatinoClauses& CLC, Solver& s){
     
     int n = CL.valoresFila.size();
     int nceldas = CL.celdasRellenar.size();
@@ -128,95 +131,62 @@ void elaborarClausesCL(const CuadradoLatino& CL,map<KeyTuple,int>& variables,int
         int fila = CL.celdasRellenar[i].fila;
         int columna = CL.celdasRellenar[i].columna;
         uint64_t nums = CL.valoresFila[fila] & CL.valoresColumna[columna];
-        CLC.clausesCeldas.push_back("");
+        vec<Var> v;
+        int vLits = 0;
         if(nums > 0){
             cout << "El cuadrado latino es unsatisfiable.\nLa celda (" << fila+1 << "," << columna+1 << ")\n no pueder tener ningún valor posible.\n";
- 
             exit(1);
         }
         while(nums > 0){
             int k = log2(static_cast<double>(nums));
             //cout << "Celda fila: " << fila << " columna: " << columna << " k: " << k << endl;
-            int variable = addVariable(variables,numVariables,fila,columna,k);
-            nums -= (1 << k);
-            CLC.clausesFila[fila*n + k] += to_string(variable) + " ";
+            Var variable = addVariable(variables,s,fila,columna,k);
+            Lit l = mkLit(variable);
+            CLC.clausesFila[fila*n + k].push(l);
             //cout << " \t clausesFila\n ";
-            CLC.clausesColumna[columna*n + k] += to_string(variable) + " ";
+            CLC.clausesColumna[columna*n + k].push(l);
             //cout << " \t clausesColumna\n ";
-            CLC.clausesCeldas[i] += to_string(variable) + " ";
+            CLC.clausesCeldas[i].push(l);
             //cout << " \t clausesCelda\n ";
+            for(int j = 0; j < v.size(); j++){
+                Var aux = v[i];
+                s.addClause(~mkLit(aux),~mkLit(variable));
+            }
+            v.push(variable);
+            nums -= (1 << k);
         }
     }
-}
 
-void escribirTupla(ofstream& salida, KeyTuple k){
-    salida << "(" << get<0>(k) << "," << get<1>(k) << "," << get<2>(k) << ")";
-}
+    for(int i = 0; i < nceldas; i++){
 
-void escribirVariables(string ficheroSalida,map<KeyTuple,int>& variables){
-    ofstream salida(ficheroSalida);
-    if(salida.is_open()){
-        for (const auto& pareja : variables) {
-            KeyTuple k = pareja.first;
-            salida << "Clave:";
-            escribirTupla(salida,k);
-            salida << ", Valor:" << pareja.second << endl;
-        }
-        salida.close();
-    }
-}
+        int fila = CL.celdasRellenar[i].fila,
+            columna = CL.celdasRellenar[i].columna;
+        uint64_t nums = CL.valoresFila[fila] & CL.valoresColumna[columna];
 
-void escribirClausesCL(string ficheroSalida,const CuadradoLatino& CL,CuadradoLatinoClauses& CLC,const int& numVariables){
-    ofstream salida(ficheroSalida);
-    if(salida.is_open()){
-        int nceldas = CL.celdasRellenar.size();
-        int n = CL.valoresFila.size();
-        salida << "                                                              \n" ;
-        int nclauses = 0;
-        for(int i = 0; i < nceldas; i++){
-            
-            int fila = CL.celdasRellenar[i].fila;
-            int columna = CL.celdasRellenar[i].columna;
-            uint64_t nums = CL.valoresFila[fila] & CL.valoresColumna[columna];
-            while(nums > 0){
-                int k = log2(static_cast<double>(nums));
-                //cout << "Celda fila: " << fila << " columna: " << columna << " k: " << k << endl;
-                nums -= (1 << k);
-                string s;
+        while(nums > 0){
 
-                s = CLC.clausesFila[fila*n + k];
-                if(s.compare("") != 0){
-                    salida << s << "0\n";
-                    CLC.clausesFila[fila*n + k] = "";
-                    nclauses++;
-                }
+            int k = log2(static_cast<double>(nums));
 
-                s = CLC.clausesColumna[columna*n + k];
-                if(s.compare("") != 0){
-                    salida << s << "0\n";
-                    CLC.clausesColumna[columna*n + k] = "";
-                    nclauses++;
-                }
-
-                s = CLC.clausesCeldas[i];
-                if(s.compare("") != 0){
-                    salida << s << "0\n";
-                    CLC.clausesCeldas[i] = "";
-                    nclauses++;
-                }
+            int nClauses = CLC.clausesFila[fila*n+k].size();
+            if(nClauses > 0){
+                s.addClause(CLC.clausesFila[fila*n+columna]);
+                CLC.clausesFila[fila*n+columna].shrink(nClauses);
             }
 
+            nClauses = CLC.clausesColumna[columna*n+k].size();
+            if(nClauses > 0){
+                s.addClause(CLC.clausesColumna[fila*n+columna]);
+                CLC.clausesFila[fila*n+columna].shrink(nClauses);
+            }
+
+            nums -= (1 << k);
         }
 
-        salida.seekp(0,ios::beg);
-        salida << "p cnf " << numVariables << " " << nclauses;
-        salida.close();
-
-    }
-    else{
-        exit(1);
+        s.addClause(CLC.clausesCeldas[i]);
+        
     }
 }
+
 
 
 bool isValid(std::vector<std::vector<char>>& square, int row, int col, char num) {
@@ -258,18 +228,48 @@ int main(int argc, char* argv[]) {
 
     string ficheroEntrada = argv[1];
     int n = stoi(argv[2]);
+    vector<int> cl(n*n,0);
 
     CuadradoLatino CL(n);
 
-    leerFichero(ficheroEntrada,n,CL);
+    leerFichero(ficheroEntrada,n,CL,cl);
 
     CuadradoLatinoClauses CLC(n);
     map<KeyTuple,int> variables;
-    int numVariables = 0;
+    Solver s;
 
-    elaborarClausesCL(CL,variables,numVariables,CLC);
-    escribirVariables("variables.txt",variables);
-    escribirClausesCL("clauses.txt",CL,CLC,numVariables);
+    elaborarClausesCL(CL,variables,CLC,s);
+
+    bool resuelto = s.solve();
+
+    if(resuelto){
+        KeyTuple kt;
+        for(int x = 0; x < s.nVars();x++){
+            if(s.model[x] != l_Undef && s.model[x] == l_True){
+                Var variable = x+1;
+                for (const auto& a : variables) {
+                    if (a.second == variable) {
+                        kt = a.first;
+                        break;
+                    }
+                }
+                int i = get<0>(kt);
+                int j = get<1>(kt);
+                int k = get<2>(kt);
+                if(cl[i*n+j] == 0){
+                    cl[i*n+j] = k;
+                }
+                else{
+                    cerr << "En la solución a la celda (" << i+1 << "," << j+1 << ") hay varios valores solución\n";
+                    exit(1);
+                }
+            }
+        }
+    }
+    else{
+        cerr << "No hay solución\n";
+        exit(1);
+    }
     
     /*std::ifstream inputFile("entrada.txt");
     std::ofstream outputFile("salida.txt");

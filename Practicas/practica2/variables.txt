@@ -1,4 +1,0 @@
-Clave:(0,1,0), Valor: 1
-Clave:(4,0,1), Valor: 2
-Clave:(4,5,0), Valor: 3
-Clave:(5,1,3), Valor: 4

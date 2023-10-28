@@ -21,9 +21,9 @@ struct CoordenadasCelda{
 
 struct CuadradoLatino{
     vector<CoordenadasCelda> celdasRellenar;
-    vector<uint64_t> valoresFila;
-    vector<uint64_t> valoresColumna;
-    CuadradoLatino(int n) : valoresFila(n,(1<<n)-1), valoresColumna(n,(1<<n)-1), celdasRellenar(){}
+    vector<unsigned long long> valoresFila;
+    vector<unsigned long long> valoresColumna;
+    CuadradoLatino(int n) : valoresFila(n,((unsigned long long) (1)<<n)-1), valoresColumna(n,((unsigned long long) (1)<<n)-1), celdasRellenar(){}
 };
 
 void leerFichero(string ficheroEntrada,int n, CuadradoLatino& CL, vector<int>& v){
@@ -43,7 +43,7 @@ void leerFichero(string ficheroEntrada,int n, CuadradoLatino& CL, vector<int>& v
                 }
                 else{
                     int num;
-                    uint64_t mascara;
+                    unsigned long long mascara;
                     try{
                         num = stoi(s);
                     } catch (const invalid_argument& e){
@@ -52,7 +52,7 @@ void leerFichero(string ficheroEntrada,int n, CuadradoLatino& CL, vector<int>& v
                     }
 
                     if(num >= 1 || num <= n){
-                        mascara = 1 << (num-1);
+                        mascara = (unsigned long long) (1) << (num-1);
 
                         if(CL.valoresFila[i] & mascara) 
                         CL.valoresFila[i] &= ~mascara;
@@ -102,7 +102,7 @@ using KeyTuple = tuple<int,int,int>;
 
 Var addVariable(map<KeyTuple,Var>& variables,Solver& s,int i, int j, int k){
     KeyTuple key = make_tuple(i,j,k);
-    Minisat::Var v = s.newVar();
+    Var v = s.newVar();
     variables[key] = v;
     return v;
 }
@@ -119,7 +119,8 @@ struct CuadradoLatinoClauses{
     vector<vec<Lit>> clausesFila;
     vector<vec<Lit>> clausesColumna;
     vector<vec<Lit>> clausesCeldas;
-    CuadradoLatinoClauses(int n) : clausesFila(n*n,vec<Lit>()), clausesColumna(n*n,vec<Lit>()), clausesCeldas(0,vec<Lit>()){}
+    CuadradoLatinoClauses(int n,int nceldas) : clausesFila(n*n), clausesColumna(n*n), clausesCeldas(nceldas){
+    }
 };
 
 
@@ -130,10 +131,12 @@ void elaborarClausesCL(const CuadradoLatino& CL,map<KeyTuple,Minisat::Var>& vari
     for(int i = 0; i < nceldas; i++){
         int fila = CL.celdasRellenar[i].fila;
         int columna = CL.celdasRellenar[i].columna;
-        uint64_t nums = CL.valoresFila[fila] & CL.valoresColumna[columna];
+        unsigned long long nums = CL.valoresFila[fila] & CL.valoresColumna[columna];
         vec<Var> v;
         int vLits = 0;
-        if(nums > 0){
+        vec<Lit> vl;
+
+        if(nums == 0){
             cout << "El cuadrado latino es unsatisfiable.\nLa celda (" << fila+1 << "," << columna+1 << ")\n no pueder tener ningún valor posible.\n";
             exit(1);
         }
@@ -149,39 +152,43 @@ void elaborarClausesCL(const CuadradoLatino& CL,map<KeyTuple,Minisat::Var>& vari
             CLC.clausesCeldas[i].push(l);
             //cout << " \t clausesCelda\n ";
             for(int j = 0; j < v.size(); j++){
-                Var aux = v[i];
+                Var aux = v[j];
                 s.addClause(~mkLit(aux),~mkLit(variable));
             }
+            
             v.push(variable);
             nums -= (1 << k);
         }
     }
-
+    //cout << "\nAñadir clauses\n";
     for(int i = 0; i < nceldas; i++){
 
         int fila = CL.celdasRellenar[i].fila,
             columna = CL.celdasRellenar[i].columna;
-        uint64_t nums = CL.valoresFila[fila] & CL.valoresColumna[columna];
+        unsigned long long nums = CL.valoresFila[fila] & CL.valoresColumna[columna];
 
         while(nums > 0){
-
             int k = log2(static_cast<double>(nums));
+            //cout << "Celda fila: " << fila << " columna: " << columna << " k: " << k << endl;
 
             int nClauses = CLC.clausesFila[fila*n+k].size();
             if(nClauses > 0){
-                s.addClause(CLC.clausesFila[fila*n+columna]);
-                CLC.clausesFila[fila*n+columna].shrink(nClauses);
+                //cout << " \t clausesFila\n ";
+                s.addClause(CLC.clausesFila[fila*n+k]);
+                CLC.clausesFila[fila*n+k].clear();
             }
 
             nClauses = CLC.clausesColumna[columna*n+k].size();
             if(nClauses > 0){
-                s.addClause(CLC.clausesColumna[fila*n+columna]);
-                CLC.clausesFila[fila*n+columna].shrink(nClauses);
+                //cout << " \t clausesColumna\n ";
+                s.addClause(CLC.clausesColumna[columna*n+k]);
+                CLC.clausesColumna[columna*n+k].clear();
             }
 
             nums -= (1 << k);
         }
 
+        //cout << " \t clausesColumna\n ";
         s.addClause(CLC.clausesCeldas[i]);
         
     }
@@ -219,6 +226,28 @@ bool solveLatinSquare(std::vector<std::vector<char>>& square) {
     return true; // Se ha llenado el cuadrado sin asteriscos
 }
 
+void mostrarVariables(map<KeyTuple,int>& variables){
+    cout << endl;
+    for(const auto& e: variables){
+        KeyTuple k = e.first;
+        Var v = e.second;
+        cout << "Variable : " << v << ",celda fila: " << get<0>(k) << " columna: " << get<1>(k) << " k: " << get<2>(k) << endl;
+    }
+    cout << endl;
+}
+
+void mostrarCL(vector<int>& CL, const int n){
+    cout << endl;
+    for(int i = 0; i < n; i++){
+        for(int j = 0; j < n; j++){
+            if(CL[i*n+j] == 0) cout << "* ";
+            else cout << CL[i*n+j] << " ";
+        }
+        cout << endl;
+    }
+    cout << endl;
+}
+
 int main(int argc, char* argv[]) {
     
     if(argc != 3){
@@ -231,22 +260,39 @@ int main(int argc, char* argv[]) {
     vector<int> cl(n*n,0);
 
     CuadradoLatino CL(n);
-
+    //cout << "Inicio Leer Fichero\n";
     leerFichero(ficheroEntrada,n,CL,cl);
+    //cout << "Fin Leer Fichero\n";
 
-    CuadradoLatinoClauses CLC(n);
+    int nceldas = CL.celdasRellenar.size();
+    CuadradoLatinoClauses CLC(n,nceldas);
     map<KeyTuple,int> variables;
     Solver s;
 
-    elaborarClausesCL(CL,variables,CLC,s);
+    //cout << "Inicio Elaborar Clauses\n";
 
+    elaborarClausesCL(CL,variables,CLC,s);
+    //cout << "Fin Elaborar Clauses\n";
     bool resuelto = s.solve();
+
+    //mostrarVariables(variables);
 
     if(resuelto){
         KeyTuple kt;
+        mostrarCL(cl,n);
+
         for(int x = 0; x < s.nVars();x++){
+            /*cout << "Variable : " << x << ",resultado : ";
+            
+            if (s.model[x] == l_Undef){
+                cout << "false";
+            }
+            else if (s.model[x] == l_True){
+                cout << "true";
+            }
+            cout << endl;*/
             if(s.model[x] != l_Undef && s.model[x] == l_True){
-                Var variable = x+1;
+                Var variable = x;
                 for (const auto& a : variables) {
                     if (a.second == variable) {
                         kt = a.first;
@@ -257,12 +303,13 @@ int main(int argc, char* argv[]) {
                 int j = get<1>(kt);
                 int k = get<2>(kt);
                 if(cl[i*n+j] == 0){
-                    cl[i*n+j] = k;
+                    cl[i*n+j] = k+1;
                 }
                 else{
                     cerr << "En la solución a la celda (" << i+1 << "," << j+1 << ") hay varios valores solución\n";
                     exit(1);
                 }
+                //mostrarCL(cl,n);
             }
         }
     }
@@ -270,6 +317,8 @@ int main(int argc, char* argv[]) {
         cerr << "No hay solución\n";
         exit(1);
     }
+
+    mostrarCL(cl,n);
     
     /*std::ifstream inputFile("entrada.txt");
     std::ofstream outputFile("salida.txt");

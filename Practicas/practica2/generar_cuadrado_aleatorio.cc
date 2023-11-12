@@ -71,6 +71,7 @@ void writeLatinSquareToFile(const vector<vector<int>>& square, const string& fil
 }
 
 
+
 // Funcion que comprueba que el cuadrado latino generado se puede satisfacer o no.
 bool isValidLatinSquare(const vector<vector<int>>& square) {
     int n = square.size();

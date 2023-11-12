@@ -5,6 +5,7 @@
 #include <ctime>
 #include <random>
 #include <algorithm>
+#include "generarCuadradoLatino.h"
 using namespace std;
 
 
@@ -128,95 +129,110 @@ bool generarCuadradoLatinoCompleto(vector<string>& CL, int n){
     bool valido = false;
     int repeticiones = 0;
     int filas;
-
-    for(int i = 0; i < n; i++){
-        fila.push_back(i+1);
-    }
-    while(1){
-        retry:
-        vector<unsigned long long> valoresColumnas = valoresPosiblesColumna;
-        filas = 0;
-        for(int i = 0; i < n/2; i++){
-            vector<unsigned long long> valoresAux = valoresColumnas;
-            random_device rd;
-            mt19937 generador(rd());
-            int nrep = 0;
-            //cout << "Fila : " << i << " " << nrep << endl;
-            //cout << endl;
-            aux = fila;
-            do{
-                //cout << "Fila : " << i << " " << nrep << endl;
-                //cout << "Generar fila" << endl;
-                generarFilaAleatoria(aux,n,generador);
-
-                //cout << "Fila generada" << endl;
-                if(nrep++ == 100000){
-                    //cout << "retry fila " << i << "\n";
-                    if(repeticiones++ > 20) goto fin;
-                    goto retry;
-                }
-            }
-            while(!filaValida(CL,aux,valoresAux,n,i));
-            valoresColumnas = valoresAux;
-            filas++;
-
+    if(n > 20){
+        mt19937 gen(time(nullptr));
+        vector<int> available_indices(n);
+        for (int i = 0; i < n; i++) {
+            available_indices[i] = i;
         }
-        fin:
-        valoresPosiblesColumna = valoresColumnas;
-        break;
-    }
-
-    random_device rd;
-    mt19937 generador(rd());
-    uniform_int_distribution<int> dis(0,n-1);
-
-    mostrarCL(CL,n);
-    for(int i = 0; i < n; i++){
-        cout << valoresPosiblesColumna[i] << endl;
-    }
-    bool fallo = false;
-    for(int i = filas; i < n; i++){
-        vector<int> fallidos;
-        retry2:
-        cout << endl;
-        int j,recorridos = 0,nsize=fallidos.size();
-        if(!fallo){
-            j = dis(generador);
-        }
-        vector<unsigned long long> valoresAuxColumna = valoresPosiblesColumna;
-        unsigned long long valoresAuxFila = ((unsigned long long) (1) << n)-1;
-
-        for(;recorridos < n;){
-            if(recorridos < nsize){
-                j = fallidos[recorridos++];
-            }
-            else{
-                if(++j == n){
-                    j = 0;
-                }
-                if(noEsta(fallidos,j)){
-                    recorridos++;
-                }
-                else continue;
-
-            }
-            unsigned long long kaux = valoresAuxColumna[j] & valoresAuxFila;
-            if(kaux == 0){
-                cout << "Go to Celda : (" << i+1 << "," << j+1 << "), kaux: " << kaux << endl;
-                ponerAlante(fallidos,j);
-                goto retry2;
-            }
-            int k = log2(static_cast<double>(kaux));
-            cout << "Celda : (" << i+1 << "," << j+1 << "), valor : " << k+1 << ", kaux: " << kaux << endl;
-            
-            unsigned long long mascara = (unsigned long long) (1) << (k);
-            valoresAuxColumna[j] &= ~mascara;
-            valoresAuxFila &= ~mascara;
-            CL[i*n+j] = to_string(k+1);
-        }
-        fallo = false;
-        valoresPosiblesColumna = valoresAuxColumna;
+        shuffle(available_indices.begin(), available_indices.end(), gen);
         
+        for (int i=0;i<n;i+=1) {
+            for (int j = 0; j < n; j++) {
+                CL[i*n+j] = to_string((available_indices[i] + j) % n + 1);
+            }
+        }
+    }
+    else{
+        for(int i = 0; i < n; i++){
+            fila.push_back(i+1);
+        }
+        while(1){
+            retry:
+            vector<unsigned long long> valoresColumnas = valoresPosiblesColumna;
+            filas = 0;
+            for(int i = 0; i < n/2; i++){
+                vector<unsigned long long> valoresAux = valoresColumnas;
+                random_device rd;
+                mt19937 generador(rd());
+                int nrep = 0;
+                //cout << "Fila : " << i << " " << nrep << endl;
+                //cout << endl;
+                aux = fila;
+                do{
+                    //cout << "Fila : " << i << " " << nrep << endl;
+                    //cout << "Generar fila" << endl;
+                    generarFilaAleatoria(aux,n,generador);
+
+                    //cout << "Fila generada" << endl;
+                    if(nrep++ == 100000){
+                        //cout << "retry fila " << i << "\n";
+                        if(repeticiones++ > 20) goto fin;
+                        goto retry;
+                    }
+                }
+                while(!filaValida(CL,aux,valoresAux,n,i));
+                valoresColumnas = valoresAux;
+                filas++;
+
+            }
+            fin:
+            valoresPosiblesColumna = valoresColumnas;
+            break;
+        }
+
+        random_device rd;
+        mt19937 generador(rd());
+        uniform_int_distribution<int> dis(0,n-1);
+
+        //mostrarCL(CL,n);
+        /*for(int i = 0; i < n; i++){
+            cout << valoresPosiblesColumna[i] << endl;
+        }*/
+        bool fallo = false;
+        for(int i = filas; i < n; i++){
+            vector<int> fallidos;
+            retry2:
+            //cout << endl;
+            int j,recorridos = 0,nsize=fallidos.size();
+            if(!fallo){
+                j = dis(generador);
+            }
+            vector<unsigned long long> valoresAuxColumna = valoresPosiblesColumna;
+            unsigned long long valoresAuxFila = ((unsigned long long) (1) << n)-1;
+
+            for(;recorridos < n;){
+                if(recorridos < nsize){
+                    j = fallidos[recorridos++];
+                }
+                else{
+                    if(++j == n){
+                        j = 0;
+                    }
+                    if(noEsta(fallidos,j)){
+                        recorridos++;
+                    }
+                    else continue;
+
+                }
+                unsigned long long kaux = valoresAuxColumna[j] & valoresAuxFila;
+                if(kaux == 0){
+                    //cout << "Go to Celda : (" << i+1 << "," << j+1 << "), kaux: " << kaux << endl;
+                    ponerAlante(fallidos,j);
+                    goto retry2;
+                }
+                int k = log2(static_cast<double>(kaux));
+                //cout << "Celda : (" << i+1 << "," << j+1 << "), valor : " << k+1 << ", kaux: " << kaux << endl;
+                
+                unsigned long long mascara = (unsigned long long) (1) << (k);
+                valoresAuxColumna[j] &= ~mascara;
+                valoresAuxFila &= ~mascara;
+                CL[i*n+j] = to_string(k+1);
+            }
+            fallo = false;
+            valoresPosiblesColumna = valoresAuxColumna;
+            
+        }
     }
     return true;
 
@@ -229,7 +245,7 @@ void generarCuadradoLatinoParcial(vector<string>& CL,const int n,const double po
     
     int fila = 0, columna = 0, asteriscos = ((n * n)*porcentaje) / 100.0;
     srand(time(NULL));
-    cout << "cuadrado latina parcial" << endl;
+    //cout << "cuadrado latina parcial" << endl;
     for(int i = 0; i < asteriscos; i++){
         fila = rand() % n;
         columna = rand() % n;
@@ -250,29 +266,5 @@ void escribirCuadradoLatinoParcial(const vector<string>& CL,const string fichero
         }   
 
     }
-}
-
-
-
-
-
-
-int main(int argc, char* argv[]) {
-
-    if(argc != 4){
-        exit(1);
-    }
-
-    string ficheroSalida = argv[1];
-    int n = stoi(argv[2]);
-    double p = stod(argv[3]);
-    vector<string> CL(n*n,"");
-    int ncuadrados = 0;
-
-    while(!generarCuadradoLatinoCompleto(CL,n)){
-        cout << "Generar otro cuadrado " << ncuadrados++ << endl;
-    }
-    generarCuadradoLatinoParcial(CL,n,p);
-    escribirCuadradoLatinoParcial(CL,ficheroSalida,n);
 }
 

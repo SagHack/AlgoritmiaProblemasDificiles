@@ -14,7 +14,7 @@
 #include <ctime>
 #include <random>
 #include <algorithm>
-#include "generarCuadradoLatino.h"
+#include "generarCL.h"
 using namespace std;
 
 

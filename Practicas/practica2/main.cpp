@@ -20,15 +20,15 @@
 #include <math.h>
 #include "minisat-master/minisat/core/Solver.h"
 #include "resolverCL.h"
-#include "generarCuadradoLatino.h"
+#include "generarCL.h"
 using namespace std;
 
-#define MIN_ARGS 3
-#define MAX_ARGS 5
+#define MIN_ARGS 4
+#define MAX_ARGS 6
 
 
 void mostrarEjeucionesCorrectas(){
-    cerr << "Ejecuciones correctas:\n" 
+    cerr << "Ejecuciones correctas:\n" ;
     cerr << "\t./main <fichero_salida_CL_completo_original> <fichero_salida_CL_parcial> <fichero_salida_CL_resuelto> <dimensión> <porcentaje_celdas_sin_valor>\n";
     cerr << "\t./main <fichero_entrada_CL_parcial> <fichero_salida_CL_resuelto> <dimensión>\n";
 }
@@ -45,20 +45,27 @@ int main(int argc, char* argv[]) {
     if(argc == MAX_ARGS){
         n = stoi(argv[4]);
         p = stoi(argv[5]);
+        vector<string> CL(n*n,"");
+        generarCLCompleto(CL,n);
+        cout << "Generado\n";
+        escribirCL(CL,argv[1],n);
+
+        generarCLParcial(CL,n,p);
+        cout << "Generado parcial\n";
+        escribirCL(CL,argv[2],n);
+
+        resolverCL(argv[2],argv[3],n,false);
+        cout << "Resuelto\n";
     }
     else if(argc == MIN_ARGS){
         n = stoi(argv[3]);
+        resolverCL(argv[1],argv[2],n,false);
+        cout << "Resuelto\n";
     }
 
-    vector<string> CL(n*n,"");
+    
 
-    generarCuadradoLatinoCompleto(CL,n);
-    cout << "Generado\n";
-    escribirCuadradoLatinoParcial(CL,argv[1],n);
+    
 
-    generarCuadradoLatinoParcial(CL,n,p);
-    cout << "Generado parcial\n";
-    escribirCuadradoLatinoParcial(CL,argv[2],n);
-
-    resolverCL(argv[2],argv[3],n,false);
+    
 }

@@ -24,7 +24,7 @@ using namespace std;
 /*
  *  Se almacena en CL un cuadrado latino completo de dimensión n x n.
  */
-void generarCLCompleto(vector<string>& CL, int n){
+void generarCLCompleto(vector<int>& CL, int n){
     
     
         mt19937 gen(time(nullptr));
@@ -36,7 +36,7 @@ void generarCLCompleto(vector<string>& CL, int n){
         
         for (int i=0;i<n;i+=1) {
             for (int j = 0; j < n; j++) {
-                CL[i*n+j] = to_string((available_indices[i] + j) % n + 1);
+                CL[i*n+j] = (available_indices[i] + j) % n + 1;
             }
         }
 
@@ -48,14 +48,14 @@ void generarCLCompleto(vector<string>& CL, int n){
  *  generando un cuadrado latino parcial de dimensión n x n, siendo
  *  porcentaje el porcentaje de casillas a rellenar.
  */
-void generarCLParcial(vector<string>& CL,const int n,const double porcentaje){
+void generarCLParcial(vector<int>& CL,const int n,const double porcentaje){
     
     int fila = 0, columna = 0, asteriscos = ((n * n)*porcentaje) / 100.0;
     srand(time(NULL));
     for(int i = 0; i < asteriscos; i++){
         fila = rand() % n;
         columna = rand() % n;
-        CL[fila*n + columna] = "*";
+        CL[fila*n + columna] = 0;
     }
 
 }
@@ -64,13 +64,20 @@ void generarCLParcial(vector<string>& CL,const int n,const double porcentaje){
  *  Escribe en el fichero ficheroSalida el cuadrado latino de dimensión 
  *  n x n almacenado en CL.
  */
-void escribirCL(const vector<string>& CL,const string ficheroSalida,const int n){
+void escribirCL(const vector<int>& CL,const string ficheroSalida,const int n){
     ofstream salida(ficheroSalida);
     if(salida.is_open()){
 
         for(int i = 0; i < n; i++){
             for(int j = 0; j < n; j++){
-                salida << CL[i*n+j] << " ";
+                int aux = CL[i*n+j];
+                if(aux == 0){
+                    salida << "* ";
+                }
+                else{
+                    salida << aux <<" ";
+                }
+                
             }
             salida << endl;
         }   

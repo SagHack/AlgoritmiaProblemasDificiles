@@ -72,8 +72,6 @@ struct CuadradoLatinoClauses{
     }
 };
 
-vector<int> CL_entero;
-
 /****************************************************************************************************/
 
 
@@ -103,18 +101,18 @@ void mostrarCL(const int n);
  * sus valores posibles. También almacena en v el cuadrado latino leído, en el que las celdas a rellenar 
  * se almacenan como 0.
  */
-void leerCL(string ficheroEntrada,int n);
+void leerCL(string ficheroEntrada,vector<int>& CL_entero,int n);
 
 /*
  * Escribe en el fichero ficheroSalida el cuadrado latino de dimensión n x n almacenado en CL.
  */
-void escribirCL(const string ficheroSalida, const int n);
+void escribirCL(const string ficheroSalida,vector<int>& CL_entero, const int n);
 
 /*
  * Modifica el cuadrado latino de manera que las celdas a rellenar con único valor posible son rellenadas con 
  * ese valor, resultando que en CL sólo se almacenen celdas a rellenar que tienen al menos 2 valores posibles.
  */
-void simplificarCeldas(int n);
+void simplificarCeldas(int n,vector<int>& CL_entero);
 
 /*
  * Añade una variable al solver de SAT que representa si valor_posible es el valor que debe tener la celda
@@ -150,7 +148,7 @@ bool validarFilaColumna(vector<int> v,int n);
 /*
  * Devuelve true si el cuadrado latino almacenado en CL es válido.
  */
-bool validarCL(int n);
+bool validarCL(vector<int>& CL_entero,int n);
 
 /****************************************************************************************************/
 
@@ -163,12 +161,13 @@ bool validarCL(int n);
  * y utiliza un SAT solver para resolver. Si se quiere realizar una simplificación de las cláusulas
  * que se pasan al SAT solver, el booleano deber ser true.
  */
-void resolverCL(string ficheroEntrada, string ficheroSalida, int n,bool simplificar = false){
+void resolverCL(string ficheroEntrada, string ficheroSalida,vector<int>& CL_entero, int n,bool simplificar = false){
     
     CL_entero = vector<int>(n*n,0);
     CL = CuadradoLatino(n);
     cout << "Voy a leer\n";
-    leerCL(ficheroEntrada,n);
+    mostrarCL(n);
+    leerCL(ficheroEntrada,CL_entero,n);
     cout << "Leer";
 
     int nceldas = CL.celdasRellenar.size();
@@ -176,7 +175,7 @@ void resolverCL(string ficheroEntrada, string ficheroSalida, int n,bool simplifi
     map<KeyTuple,int> variables;
     Solver s;
 
-    if(simplificar) simplificarCeldas(n);
+    if(simplificar) simplificarCeldas(n,CL_entero);
 
     elaborarClausesCL(variables,CLC,s);
     cout << "Solucionar\n";
@@ -213,10 +212,10 @@ void resolverCL(string ficheroEntrada, string ficheroSalida, int n,bool simplifi
     }
     
     
-    if(!validarCL(n)){
+    if(!validarCL(CL_entero,n)){
         cerr << "Solución no válida\n";
     }
-    escribirCL(ficheroSalida,n);
+    escribirCL(ficheroSalida,CL_entero,n);
 }
 
 /****************************************************************************************************/
@@ -239,14 +238,48 @@ void mostrarVariables(map<KeyTuple,int>& variables){
     }
     cout << endl;
 }
-
 /*
  * Muestra por salida estándar el cuadrado latino CL
  */
 void mostrarCL(const int n){
     cout << endl;
+    int nceldas = CL.celdasRellenar.size();
+    cout << "Celdas rellenar: " << nceldas << "\n";
+
+    for(int i = 0; i < nceldas; i++){
+        cout << "\tCelda: (" << CL.celdasRellenar[i].fila+1 << "," << CL.celdasRellenar[i].columna+1 << ")\n";
+    }
+
+    cout << "Valores posibles fila:\n";
+    for(int i = 0; i < n; i++){
+        cout << "\tFila " << i+1 << "\n\t\t";
+        vector<uint64_t> aux = CL.valoresFila[i];
+        for(int j = aux.size()-1; j >= 0 ; j--){
+            cout << aux[j] << " ";
+        }
+        cout << endl;
+    }
+
+    cout << "Valores posibles columna:\n";
+    for(int i = 0; i < n; i++){
+        cout << "\tColumna " << i+1 << "\n\t\t";
+        vector<uint64_t> aux = CL.valoresColumna[i];
+        for(int j = aux.size()-1; j >= 0 ; j--){
+            cout << aux[j] << " ";
+        }
+        cout << endl;
+    }
+}
+
+
+/*
+ * Muestra por salida estándar el cuadrado latino CL
+ */
+void mostrarCLentero(vector<int>& CL_entero,const int n){
+    cout << endl;
     for(int i = 0; i < n; i++){
         for(int j = 0; j < n; j++){
+
             if(CL_entero[i*n+j] == 0) cout << "* ";
             else cout << CL_entero[i*n+j] << " ";
         }
@@ -267,7 +300,7 @@ void mostrarCL(const int n){
  * sus valores posibles. También almacena en v el cuadrado latino leído, en el que las celdas a rellenar 
  * se almacenan como 0.
  */
-void leerCL(string ficheroEntrada,int n){
+void leerCL(string ficheroEntrada,vector<int>& CL_entero,int n){
     ifstream entrada(ficheroEntrada);
     if(entrada.is_open()){
         string s;
@@ -344,13 +377,12 @@ void leerCL(string ficheroEntrada,int n){
         cout << "HOL1" << endl;
     }
     cout << "HOLA" << endl;
-    return;
 }
 
 /*
  * Escribe en el fichero ficheroSalida el cuadrado latino de dimensión n x n almacenado en CL.
  */
-void escribirCL(const string ficheroSalida,const int n){
+void escribirCL(const string ficheroSalida,vector<int>& CL_entero,const int n){
     ofstream entrada(ficheroSalida);
     if(entrada.is_open()){
         for(int i = 0; i < n; i++){
@@ -373,7 +405,7 @@ void escribirCL(const string ficheroSalida,const int n){
  * Modifica el cuadrado latino de manera que las celdas a rellenar con único valor posible son rellenadas con 
  * ese valor, resultando que en CL sólo se almacenen celdas a rellenar que tienen al menos 2 valores posibles.
  */
-void simplificarCeldas(int n){
+void simplificarCeldas(int n,vector<int>& CL_entero){
     while(1){
         bool no_simplificado = true;
         int nCeldas = CL.celdasRellenar.size();
@@ -568,7 +600,7 @@ bool validarFilaColumna(vector<int> v,int n){
 /*
  * Devuelve true si el cuadrado latino almacenado en CL es válido.
  */
-bool validarCL(int n){
+bool validarCL(vector<int>& CL_entero,int n){
     for(int i = 0; i < n; i++){
         vector<int> v_reps(n,0);
         for(int j = 0; j < n; j++){

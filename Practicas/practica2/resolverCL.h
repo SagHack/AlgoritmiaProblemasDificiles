@@ -20,4 +20,4 @@ using namespace std;
  * y utiliza un SAT solver para resolver. Si se quiere realizar una simplificación de las cláusulas
  * que se pasan al SAT solver, el booleano deber ser true.
  */
-void resolverCL(string ficheroEntrada, string ficheroSalida, int n,bool simplificar);
+void resolverCL(string ficheroEntrada, string ficheroSalida,vector<int>& CL_entero, int n,bool simplificar);

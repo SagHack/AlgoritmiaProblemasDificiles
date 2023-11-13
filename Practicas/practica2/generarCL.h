@@ -15,18 +15,18 @@ using namespace std;
 /*
  *  Se almacena en CL un cuadrado latino completo de dimensión n x n.
  */
-void generarCLCompleto(vector<string>& CL, int n);
+void generarCLCompleto(vector<int>& CL, int n);
 
 /*
  *  Se modifica el cuadrado latino completo de dimensión n x n almacenado en CL,
  *  generando un cuadrado latino parcial de dimensión n x n, siendo
  *  porcentaje el porcentaje de casillas a rellenar.
  */
-void generarCLParcial(vector<string>& CL,const int n,const double porcentaje);
+void generarCLParcial(vector<int>& CL,const int n,const double porcentaje);
 
 /*
  *  Escribe en el fichero ficheroSalida el cuadrado latino de dimensión 
  *  n x n almacenado en CL.
  */
-void escribirCL(const vector<string>& CL,const string ficheroSalida,const int n);
+void escribirCL(const vector<int>& CL,const string ficheroSalida,const int n);
 

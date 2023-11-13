@@ -33,6 +33,7 @@ void mostrarEjeucionesCorrectas(){
     cerr << "\t./main <fichero_entrada_CL_parcial> <fichero_salida_CL_resuelto> <dimensión>\n";
 }
 
+vector<int> CL_entero;
 
 int main(int argc, char* argv[]) {
     
@@ -42,24 +43,26 @@ int main(int argc, char* argv[]) {
     }
 
     int n,p;
+    
     if(argc == MAX_ARGS){
         n = stoi(argv[4]);
         p = stoi(argv[5]);
-        vector<string> CL(n*n,"");
-        generarCLCompleto(CL,n);
+        CL_entero = vector<int>(n*n,0);
+        generarCLCompleto(CL_entero,n);
         cout << "Generado\n";
-        escribirCL(CL,argv[1],n);
+        escribirCL(CL_entero,argv[1],n);
 
-        generarCLParcial(CL,n,p);
+        generarCLParcial(CL_entero,n,p);
         cout << "Generado parcial\n";
-        escribirCL(CL,argv[2],n);
+        escribirCL(CL_entero,argv[2],n);
 
-        resolverCL(argv[2],argv[3],n,false);
+        resolverCL(argv[2],argv[3],CL_entero,n,false);
         cout << "Resuelto\n";
     }
     else if(argc == MIN_ARGS){
+        CL_entero = vector<int>(n*n,0);
         n = stoi(argv[3]);
-        resolverCL(argv[1],argv[2],n,false);
+        resolverCL(argv[1],argv[2],CL_entero,n,false);
         cout << "Resuelto\n";
     }
 

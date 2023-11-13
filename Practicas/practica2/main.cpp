@@ -1,3 +1,13 @@
+/*
+ * Fichero:   		main.cpp
+ * Autores: 		Diego García Aranda 820506
+                    Simón Alonso Gutiérrez 821038
+ * Fecha entrega:	15/11/2023
+ * Comentarios:     Fichero que implementa el programa que genera un cuadrado latino
+ *                  parcial de determinada dimensión y determinado porcentaje de celdas 
+ *                  sin valor, resuelve este cuadrado latino parcial mediante una reducción
+ *                  a SAT y un SAT solver
+ */
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -13,16 +23,33 @@
 #include "generarCuadradoLatino.h"
 using namespace std;
 
+#define MIN_ARGS 3
+#define MAX_ARGS 5
+
+
+void mostrarEjeucionesCorrectas(){
+    cerr << "Ejecuciones correctas:\n" 
+    cerr << "\t./main <fichero_salida_CL_completo_original> <fichero_salida_CL_parcial> <fichero_salida_CL_resuelto> <dimensión> <porcentaje_celdas_sin_valor>\n";
+    cerr << "\t./main <fichero_entrada_CL_parcial> <fichero_salida_CL_resuelto> <dimensión>\n";
+}
 
 
 int main(int argc, char* argv[]) {
     
-    /*if(argc != 2){
-        cerr << "Ejecución correcta: ./main <dimensión>";
-        exit(1);
-    }*/
-    int n = stoi(argv[4]);
-    int p = stoi(argv[5]);
+    if(argc < MIN_ARGS || argc > MAX_ARGS){
+       mostrarEjeucionesCorrectas();
+       exit(1);
+    }
+
+    int n,p;
+    if(argc == MAX_ARGS){
+        n = stoi(argv[4]);
+        p = stoi(argv[5]);
+    }
+    else if(argc == MIN_ARGS){
+        n = stoi(argv[3]);
+    }
+
     vector<string> CL(n*n,"");
 
     generarCuadradoLatinoCompleto(CL,n);

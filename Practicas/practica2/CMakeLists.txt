@@ -6,7 +6,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 add_executable(main
     main.cpp
     resolverCL.cpp
-    generarCuadradoLatino.cpp
+    generarCL.cpp
 )
 
 add_subdirectory(minisat-master)

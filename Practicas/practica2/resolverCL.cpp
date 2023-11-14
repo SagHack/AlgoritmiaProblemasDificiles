@@ -47,9 +47,9 @@ struct CuadradoLatino{
     vector<vector<uint64_t>> valoresColumna;
     CuadradoLatino() : valoresFila(),valoresColumna(),celdasRellenar(){}
     CuadradoLatino(int n) : celdasRellenar(){
-        int componentes = ceil(n/64.0);
+        int componentes = n/64;
         vector<uint64_t> aux;
-        for(int i = 1; i < componentes; i++){
+        for(int i = 0; i < componentes; i++){
             aux.push_back(UINT64_MAX);
         }
         
@@ -74,6 +74,8 @@ struct CuadradoLatinoClauses{
 } CLC;
 
 Solver solucionador;
+
+map<KeyTuple,Var> mapa_variables;
 
 /****************************************************************************************************/
 
@@ -110,6 +112,11 @@ void leerCL(string ficheroEntrada,vector<int>& CL_entero,int n);
  * Escribe en el fichero ficheroSalida el cuadrado latino de dimensión n x n almacenado en CL.
  */
 void escribirCL(const string ficheroSalida,vector<int>& CL_entero, const int n);
+
+/*
+ * Escribe en el fichero ficheroSalida el cuadrado latino de dimensión n x n almacenado en CL.
+ */
+void escribirCLC(const int n);
 
 /*
  * Modifica el cuadrado latino de manera que las celdas a rellenar con único valor posible son rellenadas con 
@@ -164,32 +171,30 @@ bool validarCL(vector<int>& CL_entero,int n);
  * y utiliza un SAT solver para resolver. Si se quiere realizar una simplificación de las cláusulas
  * que se pasan al SAT solver, el booleano deber ser true.
  */
-void resolverCL(string ficheroEntrada, string ficheroSalida,vector<int>& CL_entero, int n,bool simplificar = false){
+void resolverCL(string ficheroEntrada, string ficheroSalida,vector<int>& CL_entero, int n,bool simplificar){
     
     CL_entero = vector<int>(n*n,0);
     CL = CuadradoLatino(n);
-    cout << "Voy a leer\n";
-    //mostrarCL(n);
+    //cout << "Voy a leer\n";
     leerCL(ficheroEntrada,CL_entero,n);
-    cout << "Leer";
+    //cout << "Leer";
 
     int nceldas = CL.celdasRellenar.size();
     CLC = CuadradoLatinoClauses(n,nceldas);
-    map<KeyTuple,int> variables;
 
     if(simplificar) simplificarCeldas(n,CL_entero);
-
-    elaborarClausesCL(variables,solucionador);
-    cout << "Solucionar\n";
+    //cout << "eCL" <<  flush;
+    elaborarClausesCL(mapa_variables,solucionador);
+    cout << "Solucionar\n" << flush;
     bool resuelto = solucionador.solve();
-
+    cout << "Solucionado\n" << flush;
     if(resuelto){
         KeyTuple kt;
 
         for(int x = 0; x < solucionador.nVars();x++){
             if(solucionador.model[x] != l_Undef && solucionador.model[x] == l_True){
                 Var variable = x;
-                for (const auto& a : variables) {
+                for (const auto& a : mapa_variables) {
                     if (a.second == variable) {
                         kt = a.first;
                         break;
@@ -212,6 +217,7 @@ void resolverCL(string ficheroEntrada, string ficheroSalida,vector<int>& CL_ente
         cerr << "No hay solución\n";
         exit(1);
     }
+    cout << "Final\n" << flush;
     
     
     if(!validarCL(CL_entero,n)){
@@ -310,11 +316,8 @@ void leerCL(string ficheroEntrada,vector<int>& CL_entero,int n){
         CoordenadasCelda c;
 
         while(getline(entrada,s)){
-            //cout << "Leer linea";
             stringstream linea(s);
-            //cout << s << endl << "\t";
             while(getline(linea,s,SEPARADOR_ENTRADA)){
-                //cout << " " << s ;
                 if(s == "*"){
                     c.fila = i;
                     c.columna = j;
@@ -331,10 +334,9 @@ void leerCL(string ficheroEntrada,vector<int>& CL_entero,int n){
                     }
 
                     if(num >= 1 || num <= n){
-                        
-                        int componenteValores = num/64;
-                        int k = num-64*componenteValores; // k = num mod 64
-                        mascara = (uint64_t) (1) << (k-1);
+                        int componenteValores = (num-1)/64;
+                        int k = (num-1)-64*componenteValores; // k = num mod 64
+                        mascara = (uint64_t) (1) << k;
                         
                         if(CL.valoresFila[i][componenteValores] & mascara) 
                             CL.valoresFila[i][componenteValores] &= ~mascara;
@@ -367,18 +369,14 @@ void leerCL(string ficheroEntrada,vector<int>& CL_entero,int n){
             }
             i++;
             j = 0;
-            //cout << "fin\n";
         
         }
-        //cout << i << endl;
         if(i!=n){
             cerr << "No hay " << n << " filas\n";
             exit(1);
         }
         entrada.close();
-        //cout << "HOL1" << endl;
     }
-    cout << "HOLA" << endl;
 }
 
 /*
@@ -436,7 +434,7 @@ void simplificarCeldas(int n,vector<int>& CL_entero){
                 lastNum = k + count*64;
                 lastK = k;
                 nums++;
-                v_nums[count] -= (1 << k);
+                v_nums[count] -= ((uint64_t)(1) << k);
             }
 
             if(nums == 1){
@@ -483,7 +481,7 @@ Var numVariable(map<KeyTuple,Var>& variables,int fila, int columna, int valor_po
  * Si clauses almacena una cláusula, entonces la añade en el SAT solver s. Una vez añadida, elimina la cláusula
  * para que no se vuelva a añadir.
  */
-void procesarUnaClausula(vec<Lit>& clauses, Solver& s) {
+ inline void procesarUnaClausula(vec<Lit>& clauses, Solver& s) {
     int nClauses = clauses.size();
     if (nClauses > 0) {
         s.addClause(clauses);
@@ -501,31 +499,23 @@ void elaborarClausesCL(map<KeyTuple,Var>& variables, Solver& s){
     int n = CL.valoresFila.size();
     int nceldas = CL.celdasRellenar.size();
     for(int i = 0; i < nceldas; i++){
+        
         int fila = CL.celdasRellenar[i].fila;
         int columna = CL.celdasRellenar[i].columna;
-            
+        
         vector<uint64_t> v_nums;
         int nComponentes = CL.valoresFila[0].size();
-        
-        for(int w=0;w<nComponentes;w++){
-            v_nums.push_back(CL.valoresFila[fila][w] & CL.valoresColumna[columna][w]);
-        }
-
-        vec<Var> v;
-        vec<Lit> vl;
-        int vLits = 0;
         bool cero = true;
-
-        for(int w=0;w<v_nums.size();++w){
-            if(cero) cero = v_nums[w] == 0;
+        for(int w=0;w<nComponentes;w++){
+            uint64_t mascaraAux = CL.valoresFila[fila][w] & CL.valoresColumna[columna][w];
+            if(cero) cero = mascaraAux == 0;
+            v_nums.push_back(mascaraAux);
         }
         if(cero){
             cout << "El cuadrado latino es unsatisfiable.\nLa celda (" << fila+1 << "," << columna+1 << ")\n no pueder tener ningún valor posible.\n";
             exit(1);
         }
-
-        int count = v_nums.size()-1;
-
+        int count = nComponentes-1;
         while(count >= 0){
             if(v_nums[count] <=0){
                 count--;
@@ -538,27 +528,16 @@ void elaborarClausesCL(map<KeyTuple,Var>& variables, Solver& s){
             CLC.clausesFila[fila*n + (k+count*64)].push(l);
             CLC.clausesColumna[columna*n + (k+count*64)].push(l);
             CLC.clausesCeldas[i].push(l);
-
-            // Añadimos clasulas para que no haya más de un valor en la misma celda
-            for(int j = 0; j < v.size(); j++){
-                Var aux = v[j];
-                s.addClause(~mkLit(aux),~mkLit(variable));
-            }
             
-            v.push(variable);
-            
-            
-            v_nums[count] -= (1 << k);
-            
+            v_nums[count] -= ((uint64_t)(1) << k);
         }
     }
+
     for(int i = 0; i < nceldas; i++){
 
         int fila = CL.celdasRellenar[i].fila,
             columna = CL.celdasRellenar[i].columna;
         
-        
-
         vector<uint64_t> v_nums;
         int nComponentes = CL.valoresFila[0].size();
         
@@ -579,7 +558,14 @@ void elaborarClausesCL(map<KeyTuple,Var>& variables, Solver& s){
             // Clausula de la columna
             procesarUnaClausula(CLC.clausesColumna[columna * n + (k+count*64)], s);
 
-            v_nums[count] -= (1 << k);
+            v_nums[count] -= ((uint64_t)(1) << k);
+        }
+        
+        int nlits = CLC.clausesCeldas[i].size();
+        for(int lit1 = 0; lit1 < nlits;lit1++ ){
+            for(int lit2 = 0; lit2 < lit1;lit2++ ){
+                s.addClause(~CLC.clausesCeldas[i][lit1],~CLC.clausesCeldas[i][lit2]);
+            }
         }
 
         s.addClause(CLC.clausesCeldas[i]);

@@ -81,7 +81,8 @@ void escribirCL(const vector<int>& CL,const string ficheroSalida,const int n){
             }
             salida << endl;
         }   
-
+        
+        salida.close();
     }
 }
 

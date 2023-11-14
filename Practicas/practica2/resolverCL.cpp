@@ -68,9 +68,12 @@ struct CuadradoLatinoClauses{
     vector<vec<Lit>> clausesFila;
     vector<vec<Lit>> clausesColumna;
     vector<vec<Lit>> clausesCeldas;
+    CuadradoLatinoClauses() : clausesFila(), clausesColumna(), clausesCeldas(){}
     CuadradoLatinoClauses(int n,int nceldas) : clausesFila(n*n), clausesColumna(n*n), clausesCeldas(nceldas){
     }
-};
+} CLC;
+
+Solver solucionador;
 
 /****************************************************************************************************/
 
@@ -137,7 +140,7 @@ void procesarUnaClausula(vec<Lit>& clauses, Solver& s);
  * almacenados en CL, elabora variables que se guardan en el map y a partir de estas genera los literales que forman
  * las cláusulas que habrá que pasar al SAT solver s y que son almacenadas en CLC.
  */
-void elaborarClausesCL(map<KeyTuple,Var>& variables,CuadradoLatinoClauses& CLC, Solver& s);
+void elaborarClausesCL(map<KeyTuple,Var>& variables, Solver& s);
 
 /*
  * Devuelve true si una fila o columna del cuadrado latino es válida, para ello la frecuencia de cada 
@@ -166,26 +169,25 @@ void resolverCL(string ficheroEntrada, string ficheroSalida,vector<int>& CL_ente
     CL_entero = vector<int>(n*n,0);
     CL = CuadradoLatino(n);
     cout << "Voy a leer\n";
-    mostrarCL(n);
+    //mostrarCL(n);
     leerCL(ficheroEntrada,CL_entero,n);
     cout << "Leer";
 
     int nceldas = CL.celdasRellenar.size();
-    CuadradoLatinoClauses CLC(n,nceldas);
+    CLC = CuadradoLatinoClauses(n,nceldas);
     map<KeyTuple,int> variables;
-    Solver s;
 
     if(simplificar) simplificarCeldas(n,CL_entero);
 
-    elaborarClausesCL(variables,CLC,s);
+    elaborarClausesCL(variables,solucionador);
     cout << "Solucionar\n";
-    bool resuelto = s.solve();
+    bool resuelto = solucionador.solve();
 
     if(resuelto){
         KeyTuple kt;
 
-        for(int x = 0; x < s.nVars();x++){
-            if(s.model[x] != l_Undef && s.model[x] == l_True){
+        for(int x = 0; x < solucionador.nVars();x++){
+            if(solucionador.model[x] != l_Undef && solucionador.model[x] == l_True){
                 Var variable = x;
                 for (const auto& a : variables) {
                     if (a.second == variable) {
@@ -308,11 +310,11 @@ void leerCL(string ficheroEntrada,vector<int>& CL_entero,int n){
         CoordenadasCelda c;
 
         while(getline(entrada,s)){
-            cout << "Leer linea";
+            //cout << "Leer linea";
             stringstream linea(s);
-            cout << s << endl << "\t";
+            //cout << s << endl << "\t";
             while(getline(linea,s,SEPARADOR_ENTRADA)){
-                cout << " " << s ;
+                //cout << " " << s ;
                 if(s == "*"){
                     c.fila = i;
                     c.columna = j;
@@ -365,16 +367,16 @@ void leerCL(string ficheroEntrada,vector<int>& CL_entero,int n){
             }
             i++;
             j = 0;
-            cout << "fin\n";
+            //cout << "fin\n";
         
         }
-        cout << i << endl;
+        //cout << i << endl;
         if(i!=n){
             cerr << "No hay " << n << " filas\n";
             exit(1);
         }
         entrada.close();
-        cout << "HOL1" << endl;
+        //cout << "HOL1" << endl;
     }
     cout << "HOLA" << endl;
 }
@@ -494,7 +496,7 @@ void procesarUnaClausula(vec<Lit>& clauses, Solver& s) {
  * almacenados en CL, elabora variables que se guardan en el map y a partir de estas genera los literales que forman
  * las cláusulas que habrá que pasar al SAT solver s y que son almacenadas en CLC.
  */
-void elaborarClausesCL(map<KeyTuple,Var>& variables,CuadradoLatinoClauses& CLC, Solver& s){
+void elaborarClausesCL(map<KeyTuple,Var>& variables, Solver& s){
     
     int n = CL.valoresFila.size();
     int nceldas = CL.celdasRellenar.size();

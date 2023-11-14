@@ -25,8 +25,6 @@ using namespace std;
  *  Se almacena en CL un cuadrado latino completo de dimensión n x n.
  */
 void generarCLCompleto(vector<int>& CL, int n){
-    
-    
         mt19937 gen(time(nullptr));
         vector<int> available_indices(n);
         for (int i = 0; i < n; i++) {

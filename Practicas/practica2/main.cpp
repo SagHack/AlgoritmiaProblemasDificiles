@@ -62,17 +62,17 @@ int main(int argc, char* argv[]) {
         resolverCL(argv[2],argv[3],CL_entero,n,false);
         cout << "Reducción: Cuadrado latino resuelto, escrito en " << argv[3] << "\n";
 
-        // Resolver con backtracking
-        leerCL_backtracking(argv[3],CL_entero,n); // Volvemos a leer para overridear el vector e inicializarlo de nuevo
+        // // Resolver con backtracking
+        // leerCL_backtracking(argv[3],CL_entero,n); // Volvemos a leer para overridear el vector e inicializarlo de nuevo
         
-        if (resolverCL_backtracking(CL_entero,n)) {
-            string f_sal_original = argv[3];
-            string f_sal_back = f_sal_original.substr(0, 4) + "_back" + f_sal_original.substr(4);
-            cout << "Backtracking: Cuadrado latino resuelto, escrito en " << f_sal_back << "\n";
-            escribirCL_backtracking(CL_entero,f_sal_back,n);
-        } else {
-            cout << "Backtracking: No existe solución\n";
-        }
+        // if (resolverCL_backtracking(CL_entero,n)) {
+        //     string f_sal_original = argv[3];
+        //     string f_sal_back = f_sal_original.substr(0, 4) + "_back" + f_sal_original.substr(4);
+        //     cout << "Backtracking: Cuadrado latino resuelto, escrito en " << f_sal_back << "\n";
+        //     escribirCL_backtracking(CL_entero,f_sal_back,n);
+        // } else {
+        //     cout << "Backtracking: No existe solución\n";
+        // }
     }
     else if(argc == MIN_ARGS){
         CL_entero = vector<int>(n*n,0);

@@ -73,9 +73,9 @@ struct CuadradoLatinoClauses{
     }
 } CLC;
 
-Solver solucionador;
+//Solver solucionador;
 
-map<KeyTuple,Var> mapa_variables;
+map<Var,KeyTuple> mapa_variables;
 
 /****************************************************************************************************/
 
@@ -87,7 +87,7 @@ map<KeyTuple,Var> mapa_variables;
 /*
  * Muestra las variables existentes y la tupla que tiene como clave
  */
-void mostrarVariables(map<KeyTuple,Var>& variables);
+void mostrarVariables(map<Var,KeyTuple>& variables);
 
 /*
  * Muestra por salida estándar el cuadrado latino CL
@@ -128,13 +128,13 @@ void simplificarCeldas(int n,vector<int>& CL_entero);
  * Añade una variable al solver de SAT que representa si valor_posible es el valor que debe tener la celda
  * con fila y columna y devuelve esa variable.
  */
-Var addVariable(map<KeyTuple,Var>& variables,Solver& s,int fila, int columna, int valor_posible);
+Var addVariable(map<Var,KeyTuple>& variables,Solver& s,int fila, int columna, int valor_posible);
 
 /*
  * Devuelve la variable del solver de SAT que representa si valor_posible es el valor que debe tener la celda
  * con fila y columna. Si no existe esa variable, devuelve variable no definida.
  */
-Var numVariable(map<KeyTuple,Var>& variables,int fila, int columna, int valor_posible);
+//Var numVariable(map<KeyTuple,Var>& variables,int fila, int columna, int valor_posible);
 
 /*
  * Si clauses almacena una cláusula, entonces la añade en el SAT solver s. Una vez añadida, elimina la cláusula
@@ -147,7 +147,7 @@ void procesarUnaClausula(vec<Lit>& clauses, Solver& s);
  * almacenados en CL, elabora variables que se guardan en el map y a partir de estas genera los literales que forman
  * las cláusulas que habrá que pasar al SAT solver s y que son almacenadas en CLC.
  */
-void elaborarClausesCL(map<KeyTuple,Var>& variables, Solver& s);
+void elaborarClausesCL(map<Var,KeyTuple>& variables, Solver& s);
 
 /*
  * Devuelve true si una fila o columna del cuadrado latino es válida, para ello la frecuencia de cada 
@@ -172,7 +172,7 @@ bool validarCL(vector<int>& CL_entero,int n);
  * que se pasan al SAT solver, el booleano deber ser true.
  */
 void resolverCL(string ficheroEntrada, string ficheroSalida,vector<int>& CL_entero, int n,bool simplificar){
-    
+    Solver solucionador;
     CL_entero = vector<int>(n*n,0);
     CL = CuadradoLatino(n);
     //cout << "Voy a leer\n";
@@ -194,12 +194,12 @@ void resolverCL(string ficheroEntrada, string ficheroSalida,vector<int>& CL_ente
         for(int x = 0; x < solucionador.nVars();x++){
             if(solucionador.model[x] != l_Undef && solucionador.model[x] == l_True){
                 Var variable = x;
-                for (const auto& a : mapa_variables) {
-                    if (a.second == variable) {
-                        kt = a.first;
-                        break;
-                    }
+                auto iter = mapa_variables.find(variable);
+                if(iter == mapa_variables.end()){
+                    cerr << "Variable : " << variable << " no es una variable válida\n";
+                    exit(1); 
                 }
+                KeyTuple kt = iter->second;
                 int i = get<0>(kt);
                 int j = get<1>(kt);
                 int k = get<2>(kt);
@@ -237,11 +237,11 @@ void resolverCL(string ficheroEntrada, string ficheroSalida,vector<int>& CL_ente
 /*
  * Muestra las variables existentes y la tupla que tiene como clave
  */
-void mostrarVariables(map<KeyTuple,int>& variables){
+void mostrarVariables(map<Var,KeyTuple>& variables){
     cout << endl;
     for(const auto& e: variables){
-        KeyTuple k = e.first;
-        Var v = e.second;
+        KeyTuple k = e.second;
+        Var v = e.first;
         cout << "Variable : " << v << ",celda fila: " << get<0>(k) << " columna: " << get<1>(k) << " k: " << get<2>(k) << endl;
     }
     cout << endl;
@@ -458,23 +458,11 @@ void simplificarCeldas(int n,vector<int>& CL_entero){
  * Añade una variable al solver de SAT que representa si valor_posible es el valor que debe tener la celda
  * con fila y columna y devuelve esa variable.
  */
-Var addVariable(map<KeyTuple,Var>& variables,Solver& s,int fila, int columna, int valor_posible){
+Var addVariable(map<Var,KeyTuple>& variables,Solver& s,int fila, int columna, int valor_posible){
     KeyTuple key = make_tuple(fila,columna,valor_posible);
     Var v = s.newVar();
-    variables[key] = v;
+    variables[v] = key;
     return v;
-}
-
-/*
- * Devuelve la variable del solver de SAT que representa si valor_posible es el valor que debe tener la celda
- * con fila y columna. Si no existe esa variable, devuelve variable no definida.
- */
-Var numVariable(map<KeyTuple,Var>& variables,int fila, int columna, int valor_posible){
-    KeyTuple key = make_tuple(fila,columna,valor_posible);
-    auto iter = variables.find(key);
-    if(iter != variables.end()) return iter->second;
-    return -1;
-    
 }
 
 /*
@@ -489,14 +477,52 @@ Var numVariable(map<KeyTuple,Var>& variables,int fila, int columna, int valor_po
     }
 }
 
+vector<string> sClausulasFilas;
+vector<string> sClausulasCols;
+vector<string> sClausulasCeldas;
+vector<string> sClausulasCeldas2;
+
+
+void mostrarClausulas(){
+    ofstream salida("clausulas.txt");
+    
+    int n = sClausulasFilas.size();
+    salida << "Filas: " << endl;
+    for(int i = 0; i < n ; i++){
+        if(sClausulasFilas[i] != ""){
+            salida << sClausulasFilas[i] << endl;
+        }
+    }
+
+    salida << "Columnas: " << endl;
+    for(int i = 0; i < n ; i++){
+        if(sClausulasCols[i] != ""){
+            salida << sClausulasCols[i] << endl;
+        }
+    }
+    salida << "Celdas: " << endl;
+    n = sClausulasCeldas.size();
+    for(int i = 0; i < n ; i++){
+        salida << sClausulasCeldas[i]  << endl;
+    }
+    salida << "Celdas exactly one true: " << endl;
+    n = sClausulasCeldas2.size();
+    for(int i = 0; i < n ; i++){
+        salida << sClausulasCeldas2[i]  << endl;
+    }
+    
+}
 /*
  * Realiza la reducción de Cuadrado Latino a SAT. Para ello, a partir de las celdas a rellenar y sus valores posibles
  * almacenados en CL, elabora variables que se guardan en el map y a partir de estas genera los literales que forman
  * las cláusulas que habrá que pasar al SAT solver s y que son almacenadas en CLC.
  */
-void elaborarClausesCL(map<KeyTuple,Var>& variables, Solver& s){
-    
+void elaborarClausesCL(map<Var,KeyTuple>& variables, Solver& s){
     int n = CL.valoresFila.size();
+    sClausulasFilas = vector<string>(n*n,"");
+    sClausulasCols = vector<string>(n*n,"");
+    sClausulasCeldas = vector<string>();
+    sClausulasCeldas2 = vector<string>();
     int nceldas = CL.celdasRellenar.size();
     for(int i = 0; i < nceldas; i++){
         
@@ -515,7 +541,10 @@ void elaborarClausesCL(map<KeyTuple,Var>& variables, Solver& s){
             cout << "El cuadrado latino es unsatisfiable.\nLa celda (" << fila+1 << "," << columna+1 << ")\n no pueder tener ningún valor posible.\n";
             exit(1);
         }
+        sClausulasCeldas.push_back("");
         int count = nComponentes-1;
+        //int nCeldas2 = sClausulasCeldas2.size();
+        //sClausulasCeldas2.push_back("");
         while(count >= 0){
             if(v_nums[count] <=0){
                 count--;
@@ -526,13 +555,19 @@ void elaborarClausesCL(map<KeyTuple,Var>& variables, Solver& s){
             Var variable = addVariable(variables,s,fila,columna,(k+count*64));
             Lit l = mkLit(variable);
             CLC.clausesFila[fila*n + (k+count*64)].push(l);
+            sClausulasFilas[fila*n + k+count*64] += "(" + to_string(fila+1) + "," + to_string(columna+1) + "," + to_string(k+count*64) + ") V ";
+            sClausulasCols[columna*n + k+count*64] += "(" + to_string(fila+1) + "," + to_string(columna+1) + "," + to_string(k+count*64) + ") V ";
             CLC.clausesColumna[columna*n + (k+count*64)].push(l);
+            sClausulasCeldas[i] += "(" + to_string(fila+1) + "," + to_string(columna+1) + "," + to_string(k+count*64) + ") V ";
             CLC.clausesCeldas[i].push(l);
+            /*for(int i = nCeldas2; i < clausesCeldas2.size(); i++){
+
+            }*/
             
             v_nums[count] -= ((uint64_t)(1) << k);
         }
     }
-
+    mostrarClausulas();
     for(int i = 0; i < nceldas; i++){
 
         int fila = CL.celdasRellenar[i].fila,
@@ -553,6 +588,7 @@ void elaborarClausesCL(map<KeyTuple,Var>& variables, Solver& s){
                 continue;
             }
             int k = log2(static_cast<double>(v_nums[count]));
+
             // Clausula de la fila
             procesarUnaClausula(CLC.clausesFila[fila * n + (k+count*64)], s);
             // Clausula de la columna
@@ -567,6 +603,7 @@ void elaborarClausesCL(map<KeyTuple,Var>& variables, Solver& s){
                 s.addClause(~CLC.clausesCeldas[i][lit1],~CLC.clausesCeldas[i][lit2]);
             }
         }
+
 
         s.addClause(CLC.clausesCeldas[i]);
     }

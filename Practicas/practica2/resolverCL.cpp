@@ -1,11 +1,12 @@
 /*
- * Fichero:   		resolverCL.cpp
+ * Fichero:   		resolverCL.h
  * Autores: 		Diego García Aranda 820506
                     Simón Alonso Gutiérrez 821038
  * Fecha entrega:	15/11/2023
- * Comentarios:     Fichero que implementa la función que resuelve el problema del 
+ * Comentarios:     Fichero que implementa las funciones que resuelven el problema del 
  *                  cuadrado latino a partir de una reducción a SAT y usar el SAT solver
- *                  https://github.com/master-keying/minisat/ para resolverlo.
+ *                  https://github.com/master-keying/minisat/ o bien a través de un algoritmo de 
+ *                  backtracking.
  */
 #include <iostream>
 #include <fstream>
@@ -54,7 +55,7 @@ struct CuadradoLatino{
         }
         
         int k = n%64;
-        if(k != 0) aux.push_back(((uint64_t) (1) << n)-1);
+        if(k != 0) aux.push_back(((uint64_t) (1) << k)-1);
         
         for(int i = 0; i < n; i++){
             valoresFila.push_back(aux);
@@ -73,26 +74,7 @@ struct CuadradoLatinoClauses{
     }
 } CLC;
 
-//Solver solucionador;
-
 map<Var,KeyTuple> mapa_variables;
-
-/****************************************************************************************************/
-
-
-/****************************************************************************************************/
-/*                    Predefinición de funciones locales usadas para debuggear 
-                      el contenido de las estructuras de datos                                      */
-
-/*
- * Muestra las variables existentes y la tupla que tiene como clave
- */
-void mostrarVariables(map<Var,KeyTuple>& variables);
-
-/*
- * Muestra por salida estándar el cuadrado latino CL
- */
-void mostrarCL(const int n);
 
 /****************************************************************************************************/
 
@@ -106,7 +88,15 @@ void mostrarCL(const int n);
  * sus valores posibles. También almacena en v el cuadrado latino leído, en el que las celdas a rellenar 
  * se almacenan como 0.
  */
-void leerCL(string ficheroEntrada,vector<int>& CL_entero,int n);
+void leerCL_SAT(string ficheroEntrada,vector<int>& CL_entero,int n);
+
+/*
+ * Lee el fichero ficheroEntrada, el cual almacena un cuadrado latino, completo o parcial, de dimensión 
+ * n x n. Si el cuadrado latino almacenado es correcto, almacena en CL las celdas que hay que rellenar y 
+ * sus valores posibles. También almacena en v el cuadrado latino leído, en el que las celdas a rellenar 
+ * se almacenan como 0.
+ */
+void leerCL_Backtracking(string ficheroEntrada,vector<int>& CL_entero,int n);
 
 /*
  * Escribe en el fichero ficheroSalida el cuadrado latino de dimensión n x n almacenado en CL.
@@ -122,19 +112,13 @@ void escribirCLC(const int n);
  * Modifica el cuadrado latino de manera que las celdas a rellenar con único valor posible son rellenadas con 
  * ese valor, resultando que en CL sólo se almacenen celdas a rellenar que tienen al menos 2 valores posibles.
  */
-void simplificarCeldas(int n,vector<int>& CL_entero);
+void simplificarCeldas(int n,CuadradoLatino& CL,vector<int>& CL_entero);
 
 /*
  * Añade una variable al solver de SAT que representa si valor_posible es el valor que debe tener la celda
  * con fila y columna y devuelve esa variable.
  */
 Var addVariable(map<Var,KeyTuple>& variables,Solver& s,int fila, int columna, int valor_posible);
-
-/*
- * Devuelve la variable del solver de SAT que representa si valor_posible es el valor que debe tener la celda
- * con fila y columna. Si no existe esa variable, devuelve variable no definida.
- */
-//Var numVariable(map<KeyTuple,Var>& variables,int fila, int columna, int valor_posible);
 
 /*
  * Si clauses almacena una cláusula, entonces la añade en el SAT solver s. Una vez añadida, elimina la cláusula
@@ -160,140 +144,123 @@ bool validarFilaColumna(vector<int> v,int n);
  */
 bool validarCL(vector<int>& CL_entero,int n);
 
+/*
+ * Devuelve true si el numero esta presente en la fila especificada
+ */
+bool estaEnFila(const vector<int>& CL, int fila, int num,int n);
+
+/*
+ *Devuelve true si el numero esta presente en la columna especificada
+ */
+bool estaEnColumna(const vector<int>& CL, int columna, int num,int n);
+
+/*
+ * Devuelve true si se puede colocar el número en la posición especificada
+ */
+bool puedeColocar(const vector<int>& square, int row, int col, int num,int n)
+
 /****************************************************************************************************/
 
 
 /****************************************************************************************************/
-/*                    Implementación de función que resuelve cuadrados latinos parciales            */
+/*                    Implementación de funciones que resuelven cuadrados latinos parciales            */
+
 /*
  * Resuelve el cuadrado latino parcial  de dimensión n x n almacenado en el fichero ficheroEntrada y 
  * lo escribe en el fichero ficheroSalida. Para ello, realiza una reducción de cuadrado latino a SAT
  * y utiliza un SAT solver para resolver. Si se quiere realizar una simplificación de las cláusulas
  * que se pasan al SAT solver, el booleano deber ser true.
  */
-void resolverCL(string ficheroEntrada, string ficheroSalida,vector<int>& CL_entero, int n,bool simplificar){
+void resolverCL_SAT(string ficheroEntrada, string ficheroSalida,vector<int>& CL_entero, int n,bool simplificar){
     Solver solucionador;
     CL_entero = vector<int>(n*n,0);
     CL = CuadradoLatino(n);
-    //cout << "Voy a leer\n";
-    leerCL(ficheroEntrada,CL_entero,n);
-    //cout << "Leer";
+    leerCL_SAT(ficheroEntrada,CL_entero,n);
 
     int nceldas = CL.celdasRellenar.size();
     CLC = CuadradoLatinoClauses(n,nceldas);
 
-    if(simplificar) simplificarCeldas(n,CL_entero);
-    //cout << "eCL" <<  flush;
-    elaborarClausesCL(mapa_variables,solucionador);
-    cout << "Solucionar\n" << flush;
-    bool resuelto = solucionador.solve();
-    cout << "Solucionado\n" << flush;
-    if(resuelto){
-        KeyTuple kt;
+    if(simplificar){
+        cout << "Simplificar\n" << flush;
+        simplificarCeldas(n,CL,CL_entero);
+        cout << "Simplificado\n" << flush;
+        escribirCL("CL_simplificado",CL_entero,n);
+    }
+    if(CL.celdasRellenar.size() != 0){
+        elaborarClausesCL(mapa_variables,solucionador);
+        cout << "Solucionar\n" << flush;
+        bool resuelto = solucionador.solve();
+        cout << "Solucionado\n" << flush;
+        if(resuelto){
+            KeyTuple kt;
 
-        for(int x = 0; x < solucionador.nVars();x++){
-            if(solucionador.model[x] != l_Undef && solucionador.model[x] == l_True){
-                Var variable = x;
-                auto iter = mapa_variables.find(variable);
-                if(iter == mapa_variables.end()){
-                    cerr << "Variable : " << variable << " no es una variable válida\n";
-                    exit(1); 
-                }
-                KeyTuple kt = iter->second;
-                int i = get<0>(kt);
-                int j = get<1>(kt);
-                int k = get<2>(kt);
-                if(CL_entero[i*n+j] == 0){
-                    CL_entero[i*n+j] = k+1;
-                }
-                else{
-                    cerr << "En la solución a la celda (" << i+1 << "," << j+1 << ") hay varios valores solución\n";
-                    exit(1);
+            for(int x = 0; x < solucionador.nVars();x++){
+                if(solucionador.model[x] != l_Undef && solucionador.model[x] == l_True){
+                    Var variable = x;
+                    auto iter = mapa_variables.find(variable);
+                    if(iter == mapa_variables.end()){
+                        cerr << "Variable : " << variable << " no es una variable válida\n";
+                        exit(1); 
+                    }
+                    KeyTuple kt = iter->second;
+                    int i = get<0>(kt);
+                    int j = get<1>(kt);
+                    int k = get<2>(kt);
+                    if(CL_entero[i*n+j] == 0){
+                        CL_entero[i*n+j] = k+1;
+                    }
+                    else{
+                        cerr << "En la solución a la celda (" << i+1 << "," << j+1 << ") hay varios valores solución\n";
+                        exit(1);
+                    }
                 }
             }
         }
+        else{
+            cerr << "No hay solución\n";
+            exit(1);
+        }
+        cout << "Final\n" << flush;
     }
-    else{
-        cerr << "No hay solución\n";
-        exit(1);
-    }
-    cout << "Final\n" << flush;
     
     
     if(!validarCL(CL_entero,n)){
         cerr << "Solución no válida\n";
     }
-    escribirCL(ficheroSalida,CL_entero,n);
 }
 
-/****************************************************************************************************/
-
-
-
-/****************************************************************************************************/
-/*                    Implementación de funciones locales usadas para debuggear 
-                      el contenido de las estructuras de datos                                      */
-
 /*
- * Muestra las variables existentes y la tupla que tiene como clave
+ * Devuelve true si se resuelve el cuadrado latino parcial  de dimensión n x n almacenado en 
+ * el fichero ficheroEntrada. Para ello, utiliza un algoritmo de backtracking.
  */
-void mostrarVariables(map<Var,KeyTuple>& variables){
-    cout << endl;
-    for(const auto& e: variables){
-        KeyTuple k = e.second;
-        Var v = e.first;
-        cout << "Variable : " << v << ",celda fila: " << get<0>(k) << " columna: " << get<1>(k) << " k: " << get<2>(k) << endl;
-    }
-    cout << endl;
-}
-/*
- * Muestra por salida estándar el cuadrado latino CL
- */
-void mostrarCL(const int n){
-    cout << endl;
-    int nceldas = CL.celdasRellenar.size();
-    cout << "Celdas rellenar: " << nceldas << "\n";
+bool resolverCL_Backtracking(string ficheroEntrada,vector<int>& CL,int n) {
+    leerCL_backtracking(CL,ficheroEntrada)
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            // Check if the cell is empty
+            if (CL[i*n + j] == 0) {
+                for (int num = 1; num <= n; ++num) {
+                    if (puedeColocar(CL, i, j, num,n)) {
+                        // Place the number in the cell
+                        CL[i*n + j] = num;
+                        // Recursively try to fill the rest of the square
+                        if (resolverCL_backtracking(CL,n)) {
+                            return true;  // Solution found
+                        }
 
-    for(int i = 0; i < nceldas; i++){
-        cout << "\tCelda: (" << CL.celdasRellenar[i].fila+1 << "," << CL.celdasRellenar[i].columna+1 << ")\n";
-    }
+                        // If placing the number doesn't lead to a solution, backtrack
+                        CL[i*n + j] = 0;
+                    }
+                }
 
-    cout << "Valores posibles fila:\n";
-    for(int i = 0; i < n; i++){
-        cout << "\tFila " << i+1 << "\n\t\t";
-        vector<uint64_t> aux = CL.valoresFila[i];
-        for(int j = aux.size()-1; j >= 0 ; j--){
-            cout << aux[j] << " ";
+                // If no number can be placed in the current cell, backtrack
+                return false;
+            }
         }
-        cout << endl;
     }
 
-    cout << "Valores posibles columna:\n";
-    for(int i = 0; i < n; i++){
-        cout << "\tColumna " << i+1 << "\n\t\t";
-        vector<uint64_t> aux = CL.valoresColumna[i];
-        for(int j = aux.size()-1; j >= 0 ; j--){
-            cout << aux[j] << " ";
-        }
-        cout << endl;
-    }
-}
-
-
-/*
- * Muestra por salida estándar el cuadrado latino CL
- */
-void mostrarCLentero(vector<int>& CL_entero,const int n){
-    cout << endl;
-    for(int i = 0; i < n; i++){
-        for(int j = 0; j < n; j++){
-
-            if(CL_entero[i*n+j] == 0) cout << "* ";
-            else cout << CL_entero[i*n+j] << " ";
-        }
-        cout << endl;
-    }
-    cout << endl;
+    // If all cells are filled, the Latin square is solved
+    return true;
 }
 
 /****************************************************************************************************/
@@ -308,7 +275,7 @@ void mostrarCLentero(vector<int>& CL_entero,const int n){
  * sus valores posibles. También almacena en v el cuadrado latino leído, en el que las celdas a rellenar 
  * se almacenan como 0.
  */
-void leerCL(string ficheroEntrada,vector<int>& CL_entero,int n){
+void leerCL_SAT(string ficheroEntrada,vector<int>& CL_entero,int n){
     ifstream entrada(ficheroEntrada);
     if(entrada.is_open()){
         string s;
@@ -380,6 +347,60 @@ void leerCL(string ficheroEntrada,vector<int>& CL_entero,int n){
 }
 
 /*
+ * Lee el fichero ficheroEntrada, el cual almacena un cuadrado latino, completo o parcial, de dimensión 
+ * n x n. Si el cuadrado latino almacenado es correcto, almacena en CL las celdas que hay que rellenar y 
+ * sus valores posibles. También almacena en v el cuadrado latino leído, en el que las celdas a rellenar 
+ * se almacenan como 0.
+ */
+void leerCL_Backtracking(string ficheroEntrada,vector<int>& CL_entero,int n){
+    ifstream entrada(ficheroEntrada);
+    if(entrada.is_open()){
+        string s;
+        int i = 0, j = 0;
+
+        while(getline(entrada,s)){
+            stringstream linea(s);
+            while(getline(linea,s,SEPARADOR_ENTRADA)){
+                if(s == "*"){
+                    CL_entero[i*n+j] = 0;
+                }
+                else{
+                    int num;
+                    try{
+                        num = stoi(s);
+                    } catch (const invalid_argument& e){
+                        cerr << "El elemento de la fila " << i+1 << " y columna " << j+1 << " no es * o un número\n";
+                        exit(1);
+                    }
+
+                    if(num >= 1 || num <= n){
+                       CL_entero[i*n+j] = num;
+                    }
+                    else{
+                        cerr << "El número de la fila " << i+1 << " y columna " << j+1 << " no es número entre 1 y " << n << endl;
+                        exit(1);
+                    }
+                }
+                j++;
+                
+            }
+            if(j!=n){
+                cerr << "La fila " << i+1 << " no tiene " << n << " columnas\n";
+                exit(1);
+            }
+            i++;
+            j = 0;
+        
+        }
+        if(i!=n){
+            cerr << "No hay " << n << " filas\n";
+            exit(1);
+        }
+        entrada.close();
+    }
+}
+
+/*
  * Escribe en el fichero ficheroSalida el cuadrado latino de dimensión n x n almacenado en CL.
  */
 void escribirCL(const string ficheroSalida,vector<int>& CL_entero,const int n){
@@ -405,7 +426,7 @@ void escribirCL(const string ficheroSalida,vector<int>& CL_entero,const int n){
  * Modifica el cuadrado latino de manera que las celdas a rellenar con único valor posible son rellenadas con 
  * ese valor, resultando que en CL sólo se almacenen celdas a rellenar que tienen al menos 2 valores posibles.
  */
-void simplificarCeldas(int n,vector<int>& CL_entero){
+void simplificarCeldas(int n,CuadradoLatino& CL,vector<int>& CL_entero){
     while(1){
         bool no_simplificado = true;
         int nCeldas = CL.celdasRellenar.size();
@@ -419,8 +440,8 @@ void simplificarCeldas(int n,vector<int>& CL_entero){
             for(int w=0;w<nComponentes;w++){
                 v_nums.push_back(CL.valoresFila[fila][w] & CL.valoresColumna[columna][w]);
             }
-            int nums = 0, count = nComponentes -1;
-            uint64_t lastNum, lastK;
+            int nums = 0, count = nComponentes-1;
+            uint64_t lastK, lastCount;
 
             while(count >= 0){
                 if(v_nums[count] <=0){
@@ -431,21 +452,24 @@ void simplificarCeldas(int n,vector<int>& CL_entero){
                 int k = log2(static_cast<double>(v_nums[count]));
 
 
-                lastNum = k + count*64;
                 lastK = k;
+                lastCount = count;
                 nums++;
                 v_nums[count] -= ((uint64_t)(1) << k);
             }
 
             if(nums == 1){
-                CL_entero[n*fila + columna] = lastNum+1;
-                CL.valoresFila[fila][lastK] &= ~((uint64_t) (1) << (lastK-1));
-                CL.valoresColumna[columna][lastK] &= ~((uint64_t) (1) << (lastK-1));
+                CL_entero[n*fila + columna] = lastK + 64*lastCount + 1;
+                //cout << to_string(lastK + n*lastCount + 1) << "Celda eliminar (" << fila+1 << "," << columna+1 << ") ";
+                //cout << to_string(CL.valoresFila[fila][lastCount] & CL.valoresColumna[columna][lastCount]) << endl;
+                CL.valoresFila[fila][lastCount] &= ~((uint64_t) (1) << (lastK));
+                CL.valoresColumna[columna][lastCount] &= ~((uint64_t) (1) << (lastK));
+                //cout << "Celda eliminar (" << fila+1 << "," << columna+1 << ")";
+                //cout << "Celda elimnada (" << (*(CL.celdasRellenar.begin()+i)).fila+1 << "," << (*(CL.celdasRellenar.begin()+i)).columna+1 << ")";
                 CL.celdasRellenar.erase(CL.celdasRellenar.begin()+i);
                 no_simplificado = false;
                 break;
             }
-            else if(nums == 0) break;
         }
 
         
@@ -477,41 +501,6 @@ Var addVariable(map<Var,KeyTuple>& variables,Solver& s,int fila, int columna, in
     }
 }
 
-vector<string> sClausulasFilas;
-vector<string> sClausulasCols;
-vector<string> sClausulasCeldas;
-vector<string> sClausulasCeldas2;
-
-
-void mostrarClausulas(){
-    ofstream salida("clausulas.txt");
-    
-    int n = sClausulasFilas.size();
-    salida << "Filas: " << endl;
-    for(int i = 0; i < n ; i++){
-        if(sClausulasFilas[i] != ""){
-            salida << sClausulasFilas[i] << endl;
-        }
-    }
-
-    salida << "Columnas: " << endl;
-    for(int i = 0; i < n ; i++){
-        if(sClausulasCols[i] != ""){
-            salida << sClausulasCols[i] << endl;
-        }
-    }
-    salida << "Celdas: " << endl;
-    n = sClausulasCeldas.size();
-    for(int i = 0; i < n ; i++){
-        salida << sClausulasCeldas[i]  << endl;
-    }
-    salida << "Celdas exactly one true: " << endl;
-    n = sClausulasCeldas2.size();
-    for(int i = 0; i < n ; i++){
-        salida << sClausulasCeldas2[i]  << endl;
-    }
-    
-}
 /*
  * Realiza la reducción de Cuadrado Latino a SAT. Para ello, a partir de las celdas a rellenar y sus valores posibles
  * almacenados en CL, elabora variables que se guardan en el map y a partir de estas genera los literales que forman
@@ -632,6 +621,7 @@ bool validarCL(vector<int>& CL_entero,int n){
             v_reps[CL_entero[i*n + j]-1]++;
         }        
         if(!validarFilaColumna(v_reps,n)){
+            cout << "Fila " << i << " no válida";
             return false;
         }
     }
@@ -642,10 +632,43 @@ bool validarCL(vector<int>& CL_entero,int n){
             v_reps[CL_entero[j*n + i]-1]++;
         }        
         if(!validarFilaColumna(v_reps,n)){
+            cout << "Columna " << i << " no válida";
             return false;
         }
     }
     return true;
+}
+
+
+/*
+ * Devuelve true si el numero esta presente en la fila especificada
+ */
+bool estaEnFila(const vector<int>& CL, int fila, int num,int n){
+    for (int j = 0; j < n; ++j) {
+        if (CL[fila*n + j] == num) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/*
+ *Devuelve true si el numero esta presente en la columna especificada
+ */
+bool estaEnColumna(const vector<int>& CL, int columna, int num,int n) {
+    for (int i = 0; i < n; ++i) {
+        if (CL[i*n + columna] == num) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/*
+ * Devuelve true si se puede colocar el número en la posición especificada
+ */
+bool puedeColocar(const vector<int>& square, int row, int col, int num,int n) {
+    return !estaEnFila(square, row, num,n) && !estaEnColumna(square, col, num,n);
 }
 
 

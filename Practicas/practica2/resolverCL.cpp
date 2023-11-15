@@ -157,7 +157,13 @@ bool estaEnColumna(const vector<int>& CL, int columna, int num,int n);
 /*
  * Devuelve true si se puede colocar el número en la posición especificada
  */
-bool puedeColocar(const vector<int>& square, int row, int col, int num,int n)
+bool puedeColocar(const vector<int>& square, int row, int col, int num,int n);
+
+/*
+ * Devuelve true si se resuelve el cuadrado latino parcial  de dimensión n x n almacenado en 
+ * el fichero ficheroEntrada. Para ello, utiliza un algoritmo de backtracking.
+ */
+bool resolverCL_BacktrackingRec(vector<int>& CL,int n);
 
 /****************************************************************************************************/
 
@@ -171,7 +177,7 @@ bool puedeColocar(const vector<int>& square, int row, int col, int num,int n)
  * y utiliza un SAT solver para resolver. Si se quiere realizar una simplificación de las cláusulas
  * que se pasan al SAT solver, el booleano deber ser true.
  */
-void resolverCL_SAT(string ficheroEntrada, string ficheroSalida,vector<int>& CL_entero, int n,bool simplificar){
+void resolverCL_SAT(string ficheroEntrada,vector<int>& CL_entero, int n,bool simplificar){
     Solver solucionador;
     CL_entero = vector<int>(n*n,0);
     CL = CuadradoLatino(n);
@@ -220,12 +226,6 @@ void resolverCL_SAT(string ficheroEntrada, string ficheroSalida,vector<int>& CL_
             cerr << "No hay solución\n";
             exit(1);
         }
-        cout << "Final\n" << flush;
-    }
-    
-    
-    if(!validarCL(CL_entero,n)){
-        cerr << "Solución no válida\n";
     }
 }
 
@@ -234,33 +234,8 @@ void resolverCL_SAT(string ficheroEntrada, string ficheroSalida,vector<int>& CL_
  * el fichero ficheroEntrada. Para ello, utiliza un algoritmo de backtracking.
  */
 bool resolverCL_Backtracking(string ficheroEntrada,vector<int>& CL,int n) {
-    leerCL_backtracking(CL,ficheroEntrada)
-    for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < n; ++j) {
-            // Check if the cell is empty
-            if (CL[i*n + j] == 0) {
-                for (int num = 1; num <= n; ++num) {
-                    if (puedeColocar(CL, i, j, num,n)) {
-                        // Place the number in the cell
-                        CL[i*n + j] = num;
-                        // Recursively try to fill the rest of the square
-                        if (resolverCL_backtracking(CL,n)) {
-                            return true;  // Solution found
-                        }
-
-                        // If placing the number doesn't lead to a solution, backtrack
-                        CL[i*n + j] = 0;
-                    }
-                }
-
-                // If no number can be placed in the current cell, backtrack
-                return false;
-            }
-        }
-    }
-
-    // If all cells are filled, the Latin square is solved
-    return true;
+    leerCL_Backtracking(ficheroEntrada,CL,n);
+    return resolverCL_BacktrackingRec(CL,n);
 }
 
 /****************************************************************************************************/
@@ -508,10 +483,6 @@ Var addVariable(map<Var,KeyTuple>& variables,Solver& s,int fila, int columna, in
  */
 void elaborarClausesCL(map<Var,KeyTuple>& variables, Solver& s){
     int n = CL.valoresFila.size();
-    sClausulasFilas = vector<string>(n*n,"");
-    sClausulasCols = vector<string>(n*n,"");
-    sClausulasCeldas = vector<string>();
-    sClausulasCeldas2 = vector<string>();
     int nceldas = CL.celdasRellenar.size();
     for(int i = 0; i < nceldas; i++){
         
@@ -530,7 +501,6 @@ void elaborarClausesCL(map<Var,KeyTuple>& variables, Solver& s){
             cout << "El cuadrado latino es unsatisfiable.\nLa celda (" << fila+1 << "," << columna+1 << ")\n no pueder tener ningún valor posible.\n";
             exit(1);
         }
-        sClausulasCeldas.push_back("");
         int count = nComponentes-1;
         //int nCeldas2 = sClausulasCeldas2.size();
         //sClausulasCeldas2.push_back("");
@@ -544,19 +514,11 @@ void elaborarClausesCL(map<Var,KeyTuple>& variables, Solver& s){
             Var variable = addVariable(variables,s,fila,columna,(k+count*64));
             Lit l = mkLit(variable);
             CLC.clausesFila[fila*n + (k+count*64)].push(l);
-            sClausulasFilas[fila*n + k+count*64] += "(" + to_string(fila+1) + "," + to_string(columna+1) + "," + to_string(k+count*64) + ") V ";
-            sClausulasCols[columna*n + k+count*64] += "(" + to_string(fila+1) + "," + to_string(columna+1) + "," + to_string(k+count*64) + ") V ";
             CLC.clausesColumna[columna*n + (k+count*64)].push(l);
-            sClausulasCeldas[i] += "(" + to_string(fila+1) + "," + to_string(columna+1) + "," + to_string(k+count*64) + ") V ";
             CLC.clausesCeldas[i].push(l);
-            /*for(int i = nCeldas2; i < clausesCeldas2.size(); i++){
-
-            }*/
-            
             v_nums[count] -= ((uint64_t)(1) << k);
         }
     }
-    mostrarClausulas();
     for(int i = 0; i < nceldas; i++){
 
         int fila = CL.celdasRellenar[i].fila,
@@ -671,6 +633,29 @@ bool puedeColocar(const vector<int>& square, int row, int col, int num,int n) {
     return !estaEnFila(square, row, num,n) && !estaEnColumna(square, col, num,n);
 }
 
+/*
+ * Devuelve true si se resuelve el cuadrado latino parcial  de dimensión n x n almacenado en 
+ * el fichero ficheroEntrada. Para ello, utiliza un algoritmo de backtracking.
+ */
+bool resolverCL_BacktrackingRec(vector<int>& CL,int n) {
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            if (CL[i*n + j] == 0) {
+                for (int num = 1; num <= n; ++num) {
+                    if (puedeColocar(CL, i, j, num,n)) {
+                        CL[i*n + j] = num;
+                        if (resolverCL_BacktrackingRec(CL,n)) {
+                            return true;  // Si encuentra solución
+                        }
+                        CL[i*n + j] = 0;
+                    }
+                }
+                return false;
+            }
+        }
+    }
+    return true;
+}
 
 
 

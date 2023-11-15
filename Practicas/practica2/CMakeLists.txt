@@ -6,7 +6,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 add_executable(main
     main.cpp
     resolverCL.cpp
-    resolverCL_backtracking.cpp
     generarCL.cpp
 )
 

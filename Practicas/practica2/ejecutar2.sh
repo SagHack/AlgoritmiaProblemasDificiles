@@ -32,40 +32,64 @@ OPCION_PRUEBA=prueba
 OPCION_PRUEBAS_INTENSIVAS=pruebas_intensivas
 OPCION_CLEAN=clean
 
-./gCL "CL.txt" "$n" "$p"
-
-if [ "$?" -ne 0 ]; then
-    exit 1
+if [ "$#" -eq 1 ]; then
+    if [ "$1" != "pruebas" ] && [ "$1" != "pruebas_intensivas" ] && [ "$1" != "generar_datos_sinteticos" ]; then
+        mensajeError
+    fi
+elif [ "$#" -eq 2 ]; then
+    if [ "$1" == "pruebas" ]; then
+        if [ "$2" -le 0 ] || [ "$2" -gt "$CASOS_PRUEBA" ]; then
+            mensajeError
+        fi
+    elif [ "$1" == "generar_datos_sinteticos" ]; then
+        if [ "$2" -le 0 ] || [ "$2" -gt "$CASOS_SINTETICOS" ]; then
+            mensajeError
+        fi
+    else
+        mensajeError
+    fi
+else
+    mensajeError
 fi
 
-./main "CL.txt" "$n"
 
-if [ "$?" -ne 0 ]; then
-    exit 1
-fi
+RUTA=$(pwd)/$(dirname "$0")
+cd "$RUTA"
 
 if [ "$1" == "$OPCION_PRUEBA" ]; then
 
-
+    
 
 
 
 
 elif [ "$1" == "$OPCION_PRUEBAS_INTENSIVAS" ]; then
 
+    if [ ]
 
-    for ((numero = 5; numero <= MAX_DIMENSION; numero++))
-    do
+    DIR_PRUEBAS_INTENSIVAS=entrada_pruebas_intensivas
+    NINI=5
+    MAX_DIMENSION=100
+    PORCS=(10 20 30 40 50 100)
+
+
+    if [ ! -d "$DIR_PRUEBAS_INTENSIVAS" ]; then
+        mkdir "$DIR_PRUEBAS_INTENSIVAS"
+        for ((numero = INC; numero <= MAX_DIMENSION; numero++))
+        do
+            for porcentaje in "${PORCS[@]}"
+            do 
+                ficheroSalida="CL_parcial_${numero}_${porcentaje}.txt"
+                ./build/main "generarCL" "$DIR_PRUEBAS_INTENSIVAS/$ficheroSalida" "$numero" "$porcentaje"
+            done
+
+        done
+
+    fi
 
     
-
-    done
 
 elif [ "$1" == "$OPCION_CLEAN" ]; then
 
 
 fi
-
-
-./minisat-master/build/minisat "clauses.txt" "resultado.txt"
-./mostrarResultado "$n"

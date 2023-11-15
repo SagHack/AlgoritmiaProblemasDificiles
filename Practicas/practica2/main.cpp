@@ -5,8 +5,8 @@
  * Fecha entrega:	15/11/2023
  * Comentarios:     Fichero que implementa el programa que genera un cuadrado latino
  *                  parcial de determinada dimensión y determinado porcentaje de celdas 
- *                  sin valor, resuelve este cuadrado latino parcial mediante una reducción
- *                  a SAT y un SAT solver
+ *                  sin valor, que resuelve cuadrados latinos mediante reducción a SAT y
+ *                  un SAT Solver o Backtracking.
  */
 #include <iostream>
 #include <fstream>
@@ -94,13 +94,13 @@ int main(int argc, char* argv[]) {
         string ficheroSalida = argv[2];
 
         generarCLCompleto(CL_entero,n);
-        cout << "Se ha generado correctamente el cuadrado latino completo de dimensión " << n << " x " << n << ".";
+        cout << "Se ha generado correctamente el cuadrado latino completo de dimensión " << n << " x " << n << ".\n";
 
         generarCLParcial(CL_entero,n,p);
         cout << "Se ha generado correctamente el cuadrado latino parcial de dimensión " << n << " x " << n << " con un " << p << "% de celdas a rellenar.";
 
         escribirCL(CL_entero,ficheroSalida,n);
-        cout << "Se ha guardado correctamente en el fichero" << ficheroSalida << "\n";
+        cout << "Se ha guardado correctamente en el fichero " << ficheroSalida << "\n";
     }
     else if(comando == COMANDO_RESOLVER_SAT || comando == COMANDO_RESOLVER_SAT_SIMPLIFICADO || comando == COMANDO_RESOLVER_BACKTRACKING){
         if(argc != NUM_ARGS_COMANDO_RESOLVER){
@@ -122,22 +122,49 @@ int main(int argc, char* argv[]) {
         string ficheroSalida = argv[3];
 
         if(comando == COMANDO_RESOLVER_SAT){
+            auto start_time = high_resolution_clock::now();
             resolverCL_SAT(ficheroEntrada,CL_entero,n,false);
-            cout << "Se ha resuelto correctamente el cuadrado latino parcial de dimensión " << n << " x " << n << " almacenado en el fichero " << ficheroEntrada << " mediante reducción a SAT y SAT solver.";
+            auto end_time = high_resolution_clock::now();
+
+            auto duration = duration_cast<microseconds>(end_time - start_time);
+
+            resolverCL_SAT(ficheroEntrada,CL_entero,n,false);
+            cout << "\nSe ha resuelto correctamente el cuadrado latino parcial de dimensión " << n << " x " << n << " almacenado en el fichero " << ficheroEntrada << " mediante reducción a SAT y SAT solver.";
             escribirCL(CL_entero,ficheroSalida,n);
-            cout << "Se ha guardado correctamente el cuadrado latino resuelto en el fichero" << ficheroSalida << "\n";
+            cout << "\nSe ha guardado correctamente el cuadrado latino resuelto en el fichero" << ficheroSalida << "\n";
+
+            cout << "\nCuadrado latino dimensión " << n << " x " << n << "\n";
+            cout << "Resolución SAT: \t\t\t" << duration.count() << "\n\n";
         }
         else if(comando == COMANDO_RESOLVER_SAT_SIMPLIFICADO){
+
+            auto start_time = high_resolution_clock::now();
             resolverCL_SAT(ficheroEntrada,CL_entero,n,true);
-            cout << "Se ha resuelto correctamente el cuadrado latino parcial de dimensión " << n << " x " << n << " almacenado en el fichero " << ficheroEntrada << " mediante reducción simplificada a SAT y SAT solver.";
+            auto end_time = high_resolution_clock::now();
+
+            auto duration = duration_cast<microseconds>(end_time - start_time);
+            
+            cout << "\nSe ha resuelto correctamente el cuadrado latino parcial de dimensión " << n << " x " << n << " almacenado en el fichero " << ficheroEntrada << " mediante reducción simplificada a SAT y SAT solver.";
             escribirCL(CL_entero,ficheroSalida,n);
-            cout << "Se ha guardado correctamente el cuadrado latino resuelto en el fichero" << ficheroSalida << "\n";
+            cout << "\nSe ha guardado correctamente el cuadrado latino resuelto en el fichero" << ficheroSalida << "\n";
+        
+            cout << "\nCuadrado latino dimensión " << n << " x " << n << "\n";
+            cout << "Resolución SAT con simplifcación: \t" << duration.count() << "\n\n";
         }
         else{
+            auto start_time = high_resolution_clock::now();
+            
             resolverCL_Backtracking(ficheroEntrada,CL_entero,n);
-            cout << "Se ha resuelto correctamente el cuadrado latino parcial de dimensión " << n << " x " << n << " almacenado en el fichero " << ficheroEntrada << " mediante backtracking.";
+            auto end_time = high_resolution_clock::now();
+
+            auto duration = duration_cast<microseconds>(end_time - start_time);
+            
+            cout << "\nSe ha resuelto correctamente el cuadrado latino parcial de dimensión " << n << " x " << n << " almacenado en el fichero " << ficheroEntrada << " mediante backtracking.";
             escribirCL(CL_entero,ficheroSalida,n);
-            cout << "Se ha guardado correctamente el cuadrado latino resuelto en el fichero" << ficheroSalida << "\n";
+            cout << "\nSe ha guardado correctamente el cuadrado latino resuelto en el fichero" << ficheroSalida << "\n";
+        
+            cout << "\nCuadrado latino dimensión " << n << " x " << n << "\n";
+            cout << "Resolución Backtracking: \t\t" << duration.count() << "\n\n";
         }
     }
     else if(comando == COMANDO_RESOLVER_COMPARACION){
@@ -165,28 +192,28 @@ int main(int argc, char* argv[]) {
         resolverCL_SAT(ficheroEntrada,CL_entero,n,false);
         auto end_time_SAT = high_resolution_clock::now();
 
-        auto durationSAT = duration_cast<milliseconds>(end_time_SAT - start_time_SAT);
+        auto durationSAT = duration_cast<microseconds>(end_time_SAT - start_time_SAT);
         escribirCL(CL_entero,ficheroSalida1,n);
-        cout << "Se ha guardado correctamente el cuadrado latino resuelto mediante SAT en el fichero" << ficheroSalida1 << "\n";
+        cout << "Se ha guardado correctamente el cuadrado latino resuelto mediante SAT en el fichero " << ficheroSalida1 << "\n";
         
         
         auto start_time_SAT_simplificado = high_resolution_clock::now();
         resolverCL_SAT(ficheroEntrada,CL_entero,n,true);
         auto end_time_SAT_simplificado = high_resolution_clock::now();
 
-        auto durationSAT_simplificado = duration_cast<milliseconds>(end_time_SAT_simplificado - start_time_SAT_simplificado);
+        auto durationSAT_simplificado = duration_cast<microseconds>(end_time_SAT_simplificado - start_time_SAT_simplificado);
         escribirCL(CL_entero,ficheroSalida2,n);
-        cout << "Se ha guardado correctamente el cuadrado latino resuelto mediante SAT simplificado en el fichero" << ficheroSalida2 << "\n";
+        cout << "Se ha guardado correctamente el cuadrado latino resuelto mediante SAT simplificado en el fichero " << ficheroSalida2 << "\n";
 
 
         auto start_time_Backtracking = high_resolution_clock::now();
         resolverCL_Backtracking(ficheroEntrada,CL_entero,n);
         auto end_time_Backtracking = high_resolution_clock::now();
 
-        auto durationBacktracking = duration_cast<milliseconds>(end_time_Backtracking - start_time_Backtracking);
+        auto durationBacktracking = duration_cast<microseconds>(end_time_Backtracking - start_time_Backtracking);
         
         escribirCL(CL_entero,ficheroSalida3,n);
-        cout << "Se ha guardado correctamente el cuadrado latino resuelto mediante backtracking en el fichero" << ficheroSalida3 << "\n";
+        cout << "Se ha guardado correctamente el cuadrado latino resuelto mediante backtracking en el fichero " << ficheroSalida3 << "\n";
 
 
         cout << "Cuadrado latino dimensión " << n << " x " << n << "\n";
@@ -226,7 +253,7 @@ int main(int argc, char* argv[]) {
         string ficheroSalida3 = argv[5];
 
         generarCLCompleto(CL_entero,n);
-        cout << "Se ha generado correctamente el cuadrado latino completo de dimensión " << n << " x " << n << ".";
+        cout << "Se ha generado correctamente el cuadrado latino completo de dimensión " << n << " x " << n << ".\n";
 
         generarCLParcial(CL_entero,n,p);
         cout << "Se ha generado correctamente el cuadrado latino parcial de dimensión " << n << " x " << n << " con un " << p << "% de celdas a rellenar.";
@@ -238,28 +265,28 @@ int main(int argc, char* argv[]) {
         resolverCL_SAT(ficheroEntrada,CL_entero,n,false);
         auto end_time_SAT = high_resolution_clock::now();
 
-        auto durationSAT = duration_cast<milliseconds>(end_time_SAT - start_time_SAT);
+        auto durationSAT = duration_cast<microseconds>(end_time_SAT - start_time_SAT);
         escribirCL(CL_entero,ficheroSalida1,n);
-        cout << "Se ha guardado correctamente el cuadrado latino resuelto mediante SAT en el fichero" << ficheroSalida1 << "\n";
+        cout << "Se ha guardado correctamente el cuadrado latino resuelto mediante SAT en el fichero " << ficheroSalida1 << "\n";
         
         
         auto start_time_SAT_simplificado = high_resolution_clock::now();
         resolverCL_SAT(ficheroEntrada,CL_entero,n,true);
         auto end_time_SAT_simplificado = high_resolution_clock::now();
 
-        auto durationSAT_simplificado = duration_cast<milliseconds>(end_time_SAT_simplificado - start_time_SAT_simplificado);
+        auto durationSAT_simplificado = duration_cast<microseconds>(end_time_SAT_simplificado - start_time_SAT_simplificado);
         escribirCL(CL_entero,ficheroSalida2,n);
-        cout << "Se ha guardado correctamente el cuadrado latino resuelto mediante SAT simplificado en el fichero" << ficheroSalida2 << "\n";
+        cout << "Se ha guardado correctamente el cuadrado latino resuelto mediante SAT simplificado en el fichero " << ficheroSalida2 << "\n";
 
 
         auto start_time_Backtracking = high_resolution_clock::now();
         resolverCL_Backtracking(ficheroEntrada,CL_entero,n);
         auto end_time_Backtracking = high_resolution_clock::now();
 
-        auto durationBacktracking = duration_cast<milliseconds>(end_time_Backtracking - start_time_Backtracking);
+        auto durationBacktracking = duration_cast<microseconds>(end_time_Backtracking - start_time_Backtracking);
         
         escribirCL(CL_entero,ficheroSalida3,n);
-        cout << "Se ha guardado correctamente el cuadrado latino resuelto mediante backtracking en el fichero" << ficheroSalida3 << "\n";
+        cout << "Se ha guardado correctamente el cuadrado latino resuelto mediante backtracking en el fichero " << ficheroSalida3 << "\n";
 
 
         cout << "Cuadrado latino dimensión " << n << " x " << n << "\n";

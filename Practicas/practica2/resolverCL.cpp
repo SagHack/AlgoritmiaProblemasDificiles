@@ -187,16 +187,15 @@ void resolverCL_SAT(string ficheroEntrada,vector<int>& CL_entero, int n,bool sim
     CLC = CuadradoLatinoClauses(n,nceldas);
 
     if(simplificar){
-        cout << "Simplificar\n" << flush;
+        //cout << "Simplificar\n" << flush;
         simplificarCeldas(n,CL,CL_entero);
-        cout << "Simplificado\n" << flush;
-        escribirCL("CL_simplificado",CL_entero,n);
+        //cout << "Simplificado\n" << flush;
     }
     if(CL.celdasRellenar.size() != 0){
         elaborarClausesCL(mapa_variables,solucionador);
-        cout << "Solucionar\n" << flush;
+        //cout << "Solucionar\n" << flush;
         bool resuelto = solucionador.solve();
-        cout << "Solucionado\n" << flush;
+        //cout << "Solucionado\n" << flush;
         if(resuelto){
             KeyTuple kt;
 

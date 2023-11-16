@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "*.java": "java",
+        "iosfwd": "cpp",
+        "vector": "cpp"
+    }
+}

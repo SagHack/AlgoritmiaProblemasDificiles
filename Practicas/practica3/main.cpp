@@ -75,8 +75,8 @@ int main() {
     }
     
     // Inicializamos las carreteras e intersecciones
-    vector<Carretera> v_carreteras(M,Carretera);
-    vector<Interseccion> v_interseccion(N,Interseccion);
+    vector<Carretera> v_carreteras(M,Carretera());
+    vector<Interseccion> v_interseccion(N,Interseccion());
 
     int u,v,tuv;
     float puv,pvu;

@@ -1,6 +1,4 @@
-Practicas/practica1/.vscode/*
-Practicas/.vscode/*
-Practicas/practica2/.vscode/*
+Practicas/*.vscode/*
 Practicas/practica2/build/*
 Practicas/practica2/minisat-master/build/*
 Practicas/*/.nfs*

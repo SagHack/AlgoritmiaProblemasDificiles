@@ -9,7 +9,6 @@ mensajeError() {
 }
 
 DIR_BUILD=build
-DIR_BIN=bin
 
 compilar(){
 
@@ -17,9 +16,8 @@ compilar(){
         mkdir "$DIR_BUILD"
     fi
 
-    if [ ! -d "$DIR_BIN" ]; then
-        mkdir "$DIR_BIN"
-    fi
+    cd "$DIR_BUILD"
+    cmake ..
 
     make 
     
@@ -136,12 +134,34 @@ elif [ "$1" == "$OPCION_PRUEBAS_INTENSIVAS" ]; then
 
 elif [ "$1" == "$OPCION_CLEAN" ]; then
 
+    DIR_EN_PRUEBAS_INTENSIVAS=entrada_pruebas_intensivas
+    DIR_SAL_PRUEBAS_INTENSIVAS=salida_pruebas_intensivas
+    DIR_RESUL_PRUEBAS_INTENSIVAS=resultados_pruebas_intensivas
+    DIR_RESUELTO=CL_resueltos
+    DIR_PARCIALES=CL_parciales
+
     if [ -d "$DIR_BUILD" ]; then
         rm -r "$DIR_BUILD"
     fi
 
-    if [ -d "$DIR_BIN" ]; then
-        rm -r "$DIR_BIN"
+    if [ -d "$DIR_EN_PRUEBAS_INTENSIVAS" ]; then
+        rm -r "$DIR_EN_PRUEBAS_INTENSIVAS"
+    fi
+
+    if [ -d "$DIR_SAL_PRUEBAS_INTENSIVAS" ]; then
+        rm -r "$DIR_SAL_PRUEBAS_INTENSIVAS"
+    fi
+
+    if [ -d "$DIR_RESUL_PRUEBAS_INTENSIVAS" ]; then
+        rm -r "$DIR_RESUL_PRUEBAS_INTENSIVAS"
+    fi
+
+    if [ -d "$DIR_RESUELTO" ]; then
+        rm -r "$DIR_RESUELTO"
+    fi
+
+    if [ -d "$DIR_PARCIALES" ]; then
+        rm -r "$DIR_PARCIALES"
     fi
 
     

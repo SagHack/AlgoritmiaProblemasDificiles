@@ -59,7 +59,7 @@ int entregarPaquete(const vector<Carretera>& carreteras, const vector<Intersecci
          * Si hemos llegado a la intersección donde vive el cliente, entregamos el paquete y devolvemos el
          * tiempo en minutos que nos ha costado realizar la entrega.
          */
-        if(interseccionActual == IC) return true;
+        if(interseccionActual == IC) return tiempo;
 
         // Elegimos una carretera de salida de la intersección interseccionActual
         int cS = carreteraSalida(intersecciones[interseccionActual]);

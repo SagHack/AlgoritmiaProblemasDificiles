@@ -21,8 +21,9 @@ using namespace std;
  * Postcondición:   devuelve aleatoriamente la carretera por la que salir de la intersección i o -1 si la 
  *                  intersección i no tiene ninguna carretera de salida.
  */
+
+random_device rd;
 int carreteraSalida(const Interseccion& i){
-    random_device rd;
     mt19937 generador(rd());
     uniform_real_distribution<double> distribucion(0.0,1.0);
     double num_random = distribucion(generador);
@@ -48,12 +49,15 @@ int carreteraSalida(const Interseccion& i){
  *                  intersección IA hasta la intersección IC en el mapa representado por carreteras e 
  *                  intersecciones o -1 si la entrega no se ha realizado antes del límite de tiempo.
  */
-int entregarPaquete(const vector<Carretera>& carreteras, const vector<Interseccion>& intersecciones, int IC, int IA, int limiteTiempo){
+int entregarPaquete(const vector<Carretera>& carreteras, const vector<Interseccion>& intersecciones, int IC, int IA){
     int tiempo = 0;
     int interseccionActual = IA;
+    int n_intersecciones_visitadas = 0;
+
+    int max_intersecciones = intersecciones.size() * 2 ; // Para asegurar que realmente a entrado en un bucle 
 
     // Mientras el tiempo en minutos que llevamos realizando la entrega no supere el límite de tiempo.
-    while(tiempo <= limiteTiempo ){
+    while(n_intersecciones_visitadas <= max_intersecciones ){
 
         /* 
          * Si hemos llegado a la intersección donde vive el cliente, entregamos el paquete y devolvemos el
@@ -63,21 +67,22 @@ int entregarPaquete(const vector<Carretera>& carreteras, const vector<Intersecci
 
         // Elegimos una carretera de salida de la intersección interseccionActual
         int cS = carreteraSalida(intersecciones[interseccionActual]);
-
         
         // Error: la intersección no tiene carretera de salida.
         if(cS == -1){
+            cout << "ERROR: La interseccion no tiene carretera de salida" << endl;
             exit(1);
         }
 
         // Vamos a la intersección a la que se llega por la carretera cS.
         interseccionActual = (carreteras[cS].u == interseccionActual) ? carreteras[cS].v : carreteras[cS].u;
+        n_intersecciones_visitadas++;
 
         // Sumamos el tiempo en minutos que nos ha costado recorrer la carretera.
         tiempo += carreteras[cS].tuv;
     }
 
-    // Si se ha superado el límite del tiempo de entrega, devolver -1.
+    // Si se ha superado el límite del tiempo de entrega, ha entrado en un bucle, devolver -1.
     return -1;
 
 }

@@ -68,7 +68,7 @@ bool leerMapa(const string ficheroEntrada,vector<Carretera>& carreteras, vector<
             return false;
         }
 
-        if(comprobar_interseccion(B,N)){
+        if(!comprobar_interseccion(B,N)){
             cerr << "Intersección del almacen B no válida. 0 <= intersección alamacén B < " << N << ".\n";
             return false;
         }

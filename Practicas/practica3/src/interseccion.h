@@ -9,7 +9,10 @@
  *                  Perteneciente a la práctica 3 de la asignatura Algoritmia para problemas difíciles.
  */
 
+#pragma once
+
 #include <vector>
+using namespace std;
 
 /*
  * Estructura de datos que representa una intersección:

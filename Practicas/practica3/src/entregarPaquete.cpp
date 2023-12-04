@@ -9,6 +9,8 @@
 #include <iostream>
 #include <fstream>
 #include <random>
+#include <chrono>
+
 #include "entregarPaquete.h"
 using namespace std;
 
@@ -22,15 +24,13 @@ using namespace std;
  *                  intersección i no tiene ninguna carretera de salida.
  */
 
-random_device rd;
 int carreteraSalida(const Interseccion& i){
-    mt19937 generador(rd());
-    uniform_real_distribution<double> distribucion(0.0,1.0);
-    double num_random = distribucion(generador);
+    // Elegimos un numero aleatorio
+    float num_random = static_cast<float>(rand()) / RAND_MAX;
     int n = i.salidas.size();
     for(int x = 0; x < n; x++){
         double limite = i.limitesP[x];
-        if(num_random < limite){
+        if(num_random <= limite){
             return i.salidas[x];
         }
     }
@@ -54,10 +54,12 @@ int entregarPaquete(const vector<Carretera>& carreteras, const vector<Intersecci
     int interseccionActual = IA;
     int n_intersecciones_visitadas = 0;
 
-    int max_intersecciones = intersecciones.size() * 2 ; // Para asegurar que realmente a entrado en un bucle 
+    // En caso de superar 2 * intersecciones, podemos decir que ha excedido el limite de tiempo
+    int max_intersecciones = intersecciones.size() * 2 ; 
 
-    // Mientras el tiempo en minutos que llevamos realizando la entrega no supere el límite de tiempo.
+    // Mientras no supere el limite de tiempo, es decir, no visite más de 2 * intersecciones
     while(n_intersecciones_visitadas <= max_intersecciones ){
+        //cout << "Visitando intersección: " << interseccionActual << endl;
 
         /* 
          * Si hemos llegado a la intersección donde vive el cliente, entregamos el paquete y devolvemos el
@@ -81,7 +83,7 @@ int entregarPaquete(const vector<Carretera>& carreteras, const vector<Intersecci
         // Sumamos el tiempo en minutos que nos ha costado recorrer la carretera.
         tiempo += carreteras[cS].tuv;
     }
-
+    cout << "Intentamos entregar tu paquete, pero no estabas" << endl;
     // Si se ha superado el límite del tiempo de entrega, ha entrado en un bucle, devolver -1.
     return -1;
 

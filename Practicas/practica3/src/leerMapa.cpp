@@ -1,15 +1,4 @@
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <vector>
-#include <cassert>
-#include "carretera.h"
-#include "interseccion.h"
-using namespace std;
-
-#define MAX_INTERSECCIONES 900
-#define MIN_INTERSECCIONES 3
-#define MIN
+#include "leerMapa.h"
 
 /* 
  * Precondición:    
@@ -36,7 +25,18 @@ bool comprobar_interseccion(int I,int N){
 }
 
 
-bool leerMapa(const string ficheroEntrada,vector<Carretera>& carreteras, vector<Interseccion>& intersecciones){
+
+/* 
+ * Precondición:    
+ * Postcondición:   Si el fichero <ficheroEntrada> tiene el formato correcto y cumple todas las condiciones devolverá True:
+ *                  carreteras = Todas las carreteras
+ *                  intersecciones = Todas las intersecciones 
+ *                  C = Interseccion en la que vivo
+ *                  A = Interseccion del primer almacen
+ *                  B = Interseccion del segundo almacen
+ *                  En caso de no tener el formato correcto, o no cumplir alguna de las condiciones devolverá False.
+ */
+bool leerMapa(const string ficheroEntrada,vector<Carretera>& carreteras, vector<Interseccion>& intersecciones,int& C,int& A,int& B){
 
     ifstream archivo(ficheroEntrada);
     if (!archivo) {
@@ -44,7 +44,7 @@ bool leerMapa(const string ficheroEntrada,vector<Carretera>& carreteras, vector<
         return false;
     } 
 
-    int N, M, C, A, B;
+    int N, M;
 
     // Lee la primera línea del archivo
     if (archivo >> N >> M >> C >> A >> B) {
@@ -123,13 +123,14 @@ bool leerMapa(const string ficheroEntrada,vector<Carretera>& carreteras, vector<
         size = intersecciones[v].salidas.size();
         intersecciones[v].salidas.push_back(numC);
         if(size == 0){ 
-            intersecciones[v].limitesP.push_back(puv);
+            intersecciones[v].limitesP.push_back(pvu);
             numI++;
         }   
         else{
             float nuevoLimite = intersecciones[v].limitesP[size-1] + pvu;
             intersecciones[v].limitesP.push_back(nuevoLimite);
         }
+        numC++;
     }
 
     if(numI != N){
@@ -150,11 +151,6 @@ bool leerMapa(const string ficheroEntrada,vector<Carretera>& carreteras, vector<
             return false;
         }
     }
-
-
-    
-
     archivo.close();
-
-
+    return true;
 }

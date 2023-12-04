@@ -8,6 +8,7 @@
  *                  Perteneciente a la práctica 3 de la asignatura Algoritmia para problemas difíciles.
  */
 
+#pragma once
 
 /*
  * Estructura de datos que representa una carretera:

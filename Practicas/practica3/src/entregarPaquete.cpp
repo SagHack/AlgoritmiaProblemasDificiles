@@ -53,9 +53,9 @@ int entregarPaquete(const vector<Carretera>& carreteras, const vector<Intersecci
     int tiempo = 0;
     int interseccionActual = IA;
     int n_intersecciones_visitadas = 0;
-
+    
     // En caso de superar 2 * intersecciones, podemos decir que ha excedido el limite de tiempo
-    int max_intersecciones = intersecciones.size() * 2 ; 
+    int max_intersecciones = intersecciones.size() * 2; 
 
     // Mientras no supere el limite de tiempo, es decir, no visite más de 2 * intersecciones
     while(n_intersecciones_visitadas <= max_intersecciones ){

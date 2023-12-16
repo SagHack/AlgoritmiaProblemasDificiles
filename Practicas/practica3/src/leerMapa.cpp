@@ -87,11 +87,11 @@ bool leerMapa(const string ficheroEntrada,vector<Carretera>& carreteras, vector<
     while(archivo >> u >> v >> tuv >> puv >> pvu){
 
         if(!comprobar_interseccion(u,N)){
-            cerr << "Intersección u de la carretera " << numC << " no válida. 0 <= intersección u < " << N << ".\n";
+            cerr << "Intersección u de la carretera " <<u << " " << numC << " no válida. 0 <= intersección u < " << N << ".\n";
             return false;
         }
         if(!comprobar_interseccion(v,N)){
-            cerr << "Intersección v de la carretera " << numC << " no válida. 0 <= intersección v < " << N << ".\n";
+            cerr << "Intersección v de la carretera " << v  << " " << numC << " no válida. 0 <= intersección v < " << N << ".\n";
             return false;
         }
 

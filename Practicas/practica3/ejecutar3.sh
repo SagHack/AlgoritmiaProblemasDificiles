@@ -9,6 +9,7 @@ mensajeError() {
 }
 
 DIR_BUILD=build
+DIR_BIN=bin
 
 compilar(){
 
@@ -16,18 +17,16 @@ compilar(){
         mkdir "$DIR_BUILD"
     fi
 
-    cd "$DIR_BUILD"
-    cmake ..
+    if [ ! -d "$DIR_BIN" ]; then
+        mkdir "$DIR_BIN"
+    fi
 
-    make 
+    make pruebas
     
     if [ "$?" -ne 0 ]; then
         echo "Se ha producido un error al compilar"
         exit 1
     fi
-    
-    cd ..
-
 
 }
 
@@ -59,89 +58,45 @@ if [ "$1" == "$OPCION_PRUEBA" ]; then
 
     compilar
 
-    DIR_RESUELTO=CL_resueltos
-    DIR_ENTRADA=CL_parciales
+    DIR_ENTRADA=entrada_pruebas
+    DIR_SALIDA=salida_pruebas
 
-    if [ ! -d "$DIR_ENTRADA" ]; then
-        mkdir "$DIR_ENTRADA"
+    if [ ! -d "$DIR_SALIDA" ]; then
+        mkdir "$DIR_SALIDA"
     fi
-
-    if [ ! -d "$DIR_RESUELTO" ]; then
-        mkdir "$DIR_RESUELTO"
-    fi
-
-    fS1="${DIR_ENTRADA}/CL_parcial_${2}_${3}.txt"
-    fS2="${DIR_RESUELTO}/CL_resuelto_SAT_${2}_${3}.txt"
-    fS3="${DIR_RESUELTO}/CL_resuelto_SAT_simp_${2}_${3}.txt"
-    fS4="${DIR_RESUELTO}/CL_resuelto_Backtracking_${2}_${3}.txt"
-
-    ./build/main "generarCL" "$fS1" "$2" "$3"
-    ./build/main "resolverCL_SAT" "$fS1" "$fS2" "$2"
-    ./build/main "resolverCL_simplificado_SAT" "$fS1" "$fS3" "$2"
-    ./build/main "resolverCL_Backtracking" "$fS1" "$fS4" "$2"
 
 
 elif [ "$1" == "$OPCION_PRUEBAS_INTENSIVAS" ]; then
 
     compilar
 
-    DIR_EN_PRUEBAS_INTENSIVAS=entrada_pruebas_intensivas
-    DIR_SAL_PRUEBAS_INTENSIVAS=salida_pruebas_intensivas
-    DIR_RESUL_PRUEBAS_INTENSIVAS=resultados_pruebas_intensivas
-    NINI=5
-    MAX_DIMENSION=100
-    PORCS=(10 20 30 40 50 100)
+    DIR_ENTRADA=entrada_pruebas
+    DIR_SALIDA=salida_pruebas
 
 
-    if [ ! -d "$DIR_EN_PRUEBAS_INTENSIVAS" ]; then
-        mkdir "$DIR_EN_PRUEBAS_INTENSIVAS"
-        for ((numero = NINI; numero <= MAX_DIMENSION; numero+=NINI))
-        do
-            for porcentaje in "${PORCS[@]}"
-            do 
-                ficheroSalida="CL_parcial_${numero}_${porcentaje}.txt"
-                ./build/main "generarCL" "$DIR_EN_PRUEBAS_INTENSIVAS/$ficheroSalida" "$numero" "$porcentaje"
-            done
+    if [ ! -d "$DIR_ENTRADA" ]; then
+        
+    fi
+    
 
-        done
+    if [ ! -d "$DIR_SALIDA" ]; then
+        mkdir "$DIR_SALIDA"
     fi
 
-    if [ ! -d "$DIR_SAL_PRUEBAS_INTENSIVAS" ]; then
-        mkdir "$DIR_SAL_PRUEBAS_INTENSIVAS"
-    fi
 
-    if [ ! -d "$DIR_RESUL_PRUEBAS_INTENSIVAS" ]; then
-        mkdir "$DIR_RESUL_PRUEBAS_INTENSIVAS"
-    fi
-
-    for ((numero = NINI; numero <= MAX_DIMENSION; numero+=NINI))
-    do
-        for porcentaje in "${PORCS[@]}"
-        do 
-            ficheroEntrada="CL_parcial_${numero}_${porcentaje}.txt"
-            ficheroSalida1="CL_resuelto_SAT_${numero}_${porcentaje}.txt"
-            ficheroSalida2="CL_resuelto_simplifcado_SAT${numero}_${porcentaje}.txt"
-            ficheroSalida3="CL_resuelto_Backtracking${numero}_${porcentaje}.txt"
-            ficheroResultados="resultados_${numero}_${porcentaje}.txt"
-
-            if [ -e "$DIR_EN_PRUEBAS_INTENSIVAS/$ficheroEntrada" ]; then
-                ./build/main "resolverCL_comparacion" "$DIR_EN_PRUEBAS_INTENSIVAS/$ficheroEntrada" "$DIR_SAL_PRUEBAS_INTENSIVAS/$ficheroSalida1" "$DIR_SAL_PRUEBAS_INTENSIVAS/$ficheroSalida2" "$DIR_SAL_PRUEBAS_INTENSIVAS/$ficheroSalida3" "$numero" > "$DIR_RESUL_PRUEBAS_INTENSIVAS/$ficheroResultados"
-            fi
-            done
-
-    done
 
 
 elif [ "$1" == "$OPCION_CLEAN" ]; then
 
     DIR_EN_PRUEBAS_INTENSIVAS=entrada_pruebas_intensivas
     DIR_SAL_PRUEBAS_INTENSIVAS=salida_pruebas_intensivas
-    DIR_RESUL_PRUEBAS_INTENSIVAS=resultados_pruebas_intensivas
-    DIR_RESUELTO=CL_resueltos
-    DIR_PARCIALES=CL_parciales
 
     if [ -d "$DIR_BUILD" ]; then
         rm -r "$DIR_BUILD"
+    fi
+
+    if [ -d "$DIR_BIN" ]; then
+        rm -r "$DIR_BIN"
     fi
 
     if [ -d "$DIR_EN_PRUEBAS_INTENSIVAS" ]; then
@@ -151,20 +106,5 @@ elif [ "$1" == "$OPCION_CLEAN" ]; then
     if [ -d "$DIR_SAL_PRUEBAS_INTENSIVAS" ]; then
         rm -r "$DIR_SAL_PRUEBAS_INTENSIVAS"
     fi
-
-    if [ -d "$DIR_RESUL_PRUEBAS_INTENSIVAS" ]; then
-        rm -r "$DIR_RESUL_PRUEBAS_INTENSIVAS"
-    fi
-
-    if [ -d "$DIR_RESUELTO" ]; then
-        rm -r "$DIR_RESUELTO"
-    fi
-
-    if [ -d "$DIR_PARCIALES" ]; then
-        rm -r "$DIR_PARCIALES"
-    fi
-
-    
-    
 
 fi

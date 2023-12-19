@@ -1,9 +1,9 @@
 /*
- * Fichero:   		entregarPaquete.cpp
+ * Fichero:   		leerMapa.cpp
  * Autores: 		Diego García Aranda 820506
                     Simón Alonso Gutiérrez 821038
  * Fecha entrega:	22/12/2023
- * Comentarios:     Fichero que implementa la función que resuelve el problema de la entrega de paquetes.
+ * Comentarios:     Fichero que implementa la función que lee la entrada del problema de la entrega de paquetes.
  *                  Perteneciente a la práctica 3 de la asignatura Algoritmia para problemas difíciles.
  */
 #include <iostream>
@@ -49,16 +49,12 @@ int carreteraSalida(const Interseccion& i){
  *                  intersección IA hasta la intersección IC en el mapa representado por carreteras e 
  *                  intersecciones o -1 si la entrega no se ha realizado antes del límite de tiempo.
  */
-int entregarPaquete(const vector<Carretera>& carreteras, const vector<Interseccion>& intersecciones, int IC, int IA){
+int entregarPaquete(const vector<Carretera>& carreteras, const vector<Interseccion>& intersecciones, int IC, int IA, const int limiteTiempo){
     int tiempo = 0;
     int interseccionActual = IA;
-    int n_intersecciones_visitadas = 0;
-    
-    // En caso de superar 2 * intersecciones, podemos decir que ha excedido el limite de tiempo
-    int max_intersecciones = intersecciones.size() * 2; 
 
     // Mientras no supere el limite de tiempo, es decir, no visite más de 2 * intersecciones
-    while(n_intersecciones_visitadas <= max_intersecciones ){
+    while(tiempo <= limiteTiempo ){
         //cout << "Visitando intersección: " << interseccionActual << endl;
 
         /* 
@@ -78,14 +74,13 @@ int entregarPaquete(const vector<Carretera>& carreteras, const vector<Intersecci
 
         // Vamos a la intersección a la que se llega por la carretera cS.
         interseccionActual = (carreteras[cS].u == interseccionActual) ? carreteras[cS].v : carreteras[cS].u;
-        n_intersecciones_visitadas++;
 
         // Sumamos el tiempo en minutos que nos ha costado recorrer la carretera.
         tiempo += carreteras[cS].tuv;
     }
     cout << "Intentamos entregar tu paquete, pero no estabas" << endl;
     // Si se ha superado el límite del tiempo de entrega, ha entrado en un bucle, devolver -1.
-    return -1;
+    return tiempo;
 
 }
 

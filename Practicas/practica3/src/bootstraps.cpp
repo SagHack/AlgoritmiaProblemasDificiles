@@ -2,6 +2,9 @@
 #include <ctime>
 #include <cstdlib>
 #include <chrono>
+#include <algorithm>
+#include <random>
+#include <iostream>
 
 /* 
  * Precondición:    El vector de tiempos no debe estar vacio 
@@ -47,7 +50,7 @@ float bootstrap(const vector<int> tiempos){
  *                  
  */
 void realizar_bootstraps(const vector<Carretera>& carreteras, const vector<Interseccion>& intersecciones,
-                         int IC, int I_almacen,int n,float& L,float& R){
+                         int IC, int I_almacen,int n,float& L,float& R, const int limiteTiempo){
     
     // Para hacer completamente aleatoria la secuencia, necesitamos utilizar
     // una semilla que cambie aunque las ejecuciones sean muy seguidas
@@ -60,7 +63,7 @@ void realizar_bootstraps(const vector<Carretera>& carreteras, const vector<Inter
 
     // Realizamos las n simulaciones y guardamos el tiempo de cada una
     for(int i=0;i<n;i++){
-        tiempo = entregarPaquete(carreteras,intersecciones,IC,I_almacen);
+        tiempo = entregarPaquete(carreteras,intersecciones,IC,I_almacen,limiteTiempo);
         tiempos.push_back(tiempo);
     }
 

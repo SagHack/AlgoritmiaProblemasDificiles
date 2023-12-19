@@ -1,10 +1,14 @@
+/*
+ * Fichero:   		leerMapa.h
+ * Autores: 		Diego García Aranda 820506
+                    Simón Alonso Gutiérrez 821038
+ * Fecha entrega:	22/12/2023
+ * Comentarios:     Fichero que define y especifica la función que lee la entrada del problema de la entrega de paquetes.
+ *                  Perteneciente a la práctica 3 de la asignatura Algoritmia para problemas difíciles.
+ */
 #pragma once
 
-#include <iostream>
-#include <fstream>
-#include <sstream>
 #include <vector>
-#include <cassert>
 #include "carretera.h"
 #include "interseccion.h"
 

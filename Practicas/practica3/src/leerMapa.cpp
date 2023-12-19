@@ -1,3 +1,14 @@
+/*
+ * Fichero:   		leerMapa.cpp
+ * Autores: 		Diego García Aranda 820506
+                    Simón Alonso Gutiérrez 821038
+ * Fecha entrega:	22/12/2023
+ * Comentarios:     Fichero que implementa la función que lee la entrada del problema de la entrega de paquetes.
+ *                  Perteneciente a la práctica 3 de la asignatura Algoritmia para problemas difíciles.
+ */
+#include <iostream>
+#include <fstream>
+#include <sstream>
 #include "leerMapa.h"
 
 /* 
@@ -23,8 +34,6 @@ bool comprobar_numero_carreteras(int N,int M){
 bool comprobar_interseccion(int I,int N){
     return 0 <= I && I < N;
 }
-
-
 
 /* 
  * Precondición:    
@@ -81,7 +90,7 @@ bool leerMapa(const string ficheroEntrada,vector<Carretera>& carreteras, vector<
     carreteras = vector<Carretera>(M,Carretera());
     intersecciones = vector<Interseccion>(N,Interseccion());
     int u,v,tuv;
-    float puv,pvu;
+    double puv,pvu;
     int numC = 0, numI = 0;
 
     while(archivo >> u >> v >> tuv >> puv >> pvu){
@@ -115,7 +124,7 @@ bool leerMapa(const string ficheroEntrada,vector<Carretera>& carreteras, vector<
             numI++;
         }   
         else{
-            float nuevoLimite = intersecciones[u].limitesP[size-1] + puv;
+            double nuevoLimite = intersecciones[u].limitesP[size-1] + puv;
             intersecciones[u].limitesP.push_back(nuevoLimite);
         } 
 
@@ -127,7 +136,7 @@ bool leerMapa(const string ficheroEntrada,vector<Carretera>& carreteras, vector<
             numI++;
         }   
         else{
-            float nuevoLimite = intersecciones[v].limitesP[size-1] + pvu;
+            double nuevoLimite = intersecciones[v].limitesP[size-1] + pvu;
             intersecciones[v].limitesP.push_back(nuevoLimite);
         }
         numC++;
@@ -147,15 +156,16 @@ bool leerMapa(const string ficheroEntrada,vector<Carretera>& carreteras, vector<
     for(int i = 0; i < N; i++){
 
         int size = intersecciones[i].limitesP.size();
-        float limiteSuperiorP = intersecciones[i].limitesP[size-1];
+        double limiteSuperiorP = intersecciones[i].limitesP[size-1];
         if(i == C){
-            if(limiteSuperiorP != 0.0f){
+            
+            if(limiteSuperiorP != 0.0){
                 cerr << "La suma de las probabilidades de las posibles salidas de la intersección del cliente " << i << " no es 0.\n";
                 return false;
             }
         }
-        else if(limiteSuperiorP != 1.0f){
-            cerr << "La suma de las probabilidades de las posibles salidas de la intersección " << i << " no es 1.\n";
+        else if(limiteSuperiorP != 1){
+            cerr << "La suma de las probabilidades de las posibles salidas de la intersección " << i << "dd " << limiteSuperiorP << " no es 1.\n";
             return false;
         }
     }

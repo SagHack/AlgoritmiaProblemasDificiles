@@ -35,7 +35,7 @@ OPCION_PRUEBAS_INTENSIVAS=pruebas_intensivas
 OPCION_CLEAN=clean
 
 if [ "$#" -eq 1 ]; then
-    if [ "$1" != "$OPCION_CLEAN" ] && [ "$1" != "$OPCION_PRUEBAS_INTENSIVAS" ] && [ "$1" == "$OPCION_PRUEBA" ]; then
+    if [ "$1" != "$OPCION_CLEAN" ] && [ "$1" != "$OPCION_PRUEBAS_INTENSIVAS" ] && [ "$1" != "$OPCION_PRUEBA" ]; then
         mensajeError
     fi
 else
@@ -63,7 +63,7 @@ if [ "$1" == "$OPCION_PRUEBA" ]; then
 
     compilar
 
-    ./bin/prueba "$DIR_ENTRADA/prueba1.txt" 100
+    ./bin/prueba "$DIR_ENTRADA/prueba1.txt" 500 360
 
 
 elif [ "$1" == "$OPCION_PRUEBAS_INTENSIVAS" ]; then
@@ -74,9 +74,9 @@ elif [ "$1" == "$OPCION_PRUEBAS_INTENSIVAS" ]; then
     DIR_SALIDA=salida_pruebas
 
 
-    if [ ! -d "$DIR_ENTRADA" ]; then
+    # if [ ! -d "$DIR_ENTRADA" ]; then
         
-    fi
+    # fi
     
 
     if [ ! -d "$DIR_SALIDA" ]; then

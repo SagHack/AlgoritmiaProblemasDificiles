@@ -15,7 +15,7 @@ BIN_DIR=bin
 BOOTSTRAP=bootstraps
 ENTREGARPAQUETE=entregarPaquete
 LEERMAPA=leerMapa
-PRUEBAS=pruebas
+PRUEBAS=prueba
 CC=g++
 CPPFLAGS=-std=c++11 # Flags compilacion
 

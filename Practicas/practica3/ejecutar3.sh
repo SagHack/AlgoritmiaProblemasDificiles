@@ -2,9 +2,9 @@
 mensajeError() {
     printf "\nParámetros incorrectos.\n" 1>&2;
     printf "Ejecuciones correctas:\n" 1>&2;
-    printf "\t ./ejecutar2.sh prueba <dimensión cuadrado latino> <porcentaje celdas a rellenar>\n\t\tsiendo <porcentaje celdas a rellenar> un decimal entre 1 y 100\n" 1>&2;
-    printf "\t ./ejecutar2.sh pruebas_intensivas\n" 1>&2;
-    printf "\t ./ejecutar2.sh clean\n\n" 1>&2;
+    printf "\t ./ejecutar3.sh prueba\n" 1>&2;
+    printf "\t ./ejecutar3.sh pruebas_intensivas\n" 1>&2;
+    printf "\t ./ejecutar3.sh clean\n\n" 1>&2;
     exit 1;
 }
 
@@ -35,15 +35,7 @@ OPCION_PRUEBAS_INTENSIVAS=pruebas_intensivas
 OPCION_CLEAN=clean
 
 if [ "$#" -eq 1 ]; then
-    if [ "$1" != "$OPCION_CLEAN" ] && [ "$1" != "$OPCION_PRUEBAS_INTENSIVAS" ]; then
-        mensajeError
-    fi
-elif [ "$#" -eq 3 ]; then
-    if [ "$1" == "$OPCION_PRUEBA" ]; then
-        if ! [[ "$2" =~ ^[0-9]+$ ]] || ! [[ "$3" =~ ^[0-9]+$ ]] || [ "$3" -le 1 ] || [ "$2" -gt 100 ]; then
-            mensajeError
-        fi
-    else
+    if [ "$1" != "$OPCION_CLEAN" ] && [ "$1" != "$OPCION_PRUEBAS_INTENSIVAS" ] && [ "$1" == "$OPCION_PRUEBA" ]; then
         mensajeError
     fi
 else
@@ -56,21 +48,29 @@ cd "$RUTA"
 
 if [ "$1" == "$OPCION_PRUEBA" ]; then
 
-    compilar
-
-    DIR_ENTRADA=entrada_pruebas
+    DIR_ENTRADA=entradas_pruebas
     DIR_SALIDA=salida_pruebas
+
+    if [ ! -d "$DIR_ENTRADA" ]; then
+        echo "No existe el directorio que almacena las entradas de las pruebas."
+        exit 1
+    fi
 
     if [ ! -d "$DIR_SALIDA" ]; then
         mkdir "$DIR_SALIDA"
     fi
 
 
+    compilar
+
+    ./bin/prueba "$DIR_ENTRADA/prueba1.txt" 100
+
+
 elif [ "$1" == "$OPCION_PRUEBAS_INTENSIVAS" ]; then
 
     compilar
 
-    DIR_ENTRADA=entrada_pruebas
+    DIR_ENTRADA=entradas_pruebas
     DIR_SALIDA=salida_pruebas
 
 

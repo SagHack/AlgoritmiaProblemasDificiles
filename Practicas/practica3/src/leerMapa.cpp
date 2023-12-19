@@ -136,6 +136,7 @@ bool leerMapa(const string ficheroEntrada,vector<Carretera>& carreteras, vector<
     if(numI != N){
         cerr << "En el fichero no hay realmente " << N << " intersecciones.\n";
         return false;
+
     }
 
     if(numC != M){
@@ -144,9 +145,16 @@ bool leerMapa(const string ficheroEntrada,vector<Carretera>& carreteras, vector<
     }
 
     for(int i = 0; i < N; i++){
+
         int size = intersecciones[i].limitesP.size();
         float limiteSuperiorP = intersecciones[i].limitesP[size-1];
-        if(limiteSuperiorP != 1.0f){
+        if(i == C){
+            if(limiteSuperiorP != 0.0f){
+                cerr << "La suma de las probabilidades de las posibles salidas de la intersección del cliente " << i << " no es 0.\n";
+                return false;
+            }
+        }
+        else if(limiteSuperiorP != 1.0f){
             cerr << "La suma de las probabilidades de las posibles salidas de la intersección " << i << " no es 1.\n";
             return false;
         }

@@ -13,25 +13,6 @@ using namespace std;
 #define MAX_INTERSECCIONES 900
 #define MIN_INTERSECCIONES 3
 
-
-/* 
- * Precondición:    
- * Postcondición:   devuelve MIN_INTERSECCIONES <= N <= MAX_INTERSECCIONES
- */
-bool comprobar_numero_intersecciones(int N);
-
-/* 
- * Precondición:    
- * Postcondición:   devuelve N/2 <= M <= N*(N-1)/2
- */
-bool comprobar_numero_carreteras(int N, int M);
-
-/* 
- * Precondición:    
- * Postcondición:   devuelve 0 <= I < N
- */
-bool comprobar_interseccion(int I, int N);
-
 /* 
  * Precondición:    
  * Postcondición:   Si el fichero <ficheroEntrada> tiene el formato correcto y cumple todas las condiciones devolverá True:

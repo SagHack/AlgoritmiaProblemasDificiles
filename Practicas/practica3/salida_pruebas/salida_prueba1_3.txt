@@ -1,0 +1,278 @@
+
+Prueba con 100 simulaciones
+
+Realizando simulaciones Almacen A
+Intentamos entregar tu paquete, pero no estabas
+Simulaciones Almacen A finalizadas
+
+Realizando simulaciones Almacen B
+Intentamos entregar tu paquete, pero no estabas
+Simulaciones Almacen B finalizadas
+
+Almacen A -> Paquetes entregados: 99. Paquetes no entregados: 1
+Almacen B -> Paquetes entregados: 99. Paquetes no entregados: 1
+Almacen A -> Intervalo del 90%: [121.725, 150.815]
+Almacen B -> Intervalo del 90%: [42.84, 72.115]
+
+----------------------------------------------------------
+
+Prueba con 1000 simulaciones
+
+Realizando simulaciones Almacen A
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Simulaciones Almacen A finalizadas
+
+Realizando simulaciones Almacen B
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Simulaciones Almacen B finalizadas
+
+Almacen A -> Paquetes entregados: 985. Paquetes no entregados: 15
+Almacen B -> Paquetes entregados: 991. Paquetes no entregados: 9
+Almacen A -> Intervalo del 90%: [138.604, 149.598]
+Almacen B -> Intervalo del 90%: [51.358, 60.243]
+
+----------------------------------------------------------
+
+Prueba con 10000 simulaciones
+
+Realizando simulaciones Almacen A
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Simulaciones Almacen A finalizadas
+
+Realizando simulaciones Almacen B
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Simulaciones Almacen B finalizadas
+
+Almacen A -> Paquetes entregados: 9832. Paquetes no entregados: 168
+Almacen B -> Paquetes entregados: 9960. Paquetes no entregados: 40
+Almacen A -> Intervalo del 90%: [140.043, 143.751]
+Almacen B -> Intervalo del 90%: [52.474, 55.1063]
+
+----------------------------------------------------------
+

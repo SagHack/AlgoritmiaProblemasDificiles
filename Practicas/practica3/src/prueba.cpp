@@ -38,9 +38,18 @@ int main(int argc, char *argv[]) {
 
     float L_A,R_A; // Intervalo de confianza del 90% para el almacen A
     float L_B,R_B; // Intervalo de confianza del 90% para el almacen B
-    realizar_bootstraps(carreteras,intersecciones,C,A,n_simulaciones,L_A,R_A,limiteTiempo); // Bootstraps para el almacen A
-    realizar_bootstraps(carreteras,intersecciones,C,B,n_simulaciones,L_B,R_B,limiteTiempo); // Bootstraps para el almacen B
+    int veces_no_entrega_paqueteA = 0,veces_no_entrega_paqueteB = 0; 
+    
+    cout << "Realizando simulaciones Almacen A\n";
+    realizar_bootstraps(carreteras,intersecciones,C,A,n_simulaciones,L_A,R_A,veces_no_entrega_paqueteA,limiteTiempo); // Bootstraps para el almacen A
+    cout << "Simulaciones Almacen A finalizadas\n\n";
 
+    cout << "Realizando simulaciones Almacen B\n";
+    realizar_bootstraps(carreteras,intersecciones,C,B,n_simulaciones,L_B,R_B,veces_no_entrega_paqueteB,limiteTiempo); // Bootstraps para el almacen B
+    cout << "Simulaciones Almacen B finalizadas\n\n";
+
+    cout << "Almacen A -> Paquetes entregados: " << n_simulaciones - veces_no_entrega_paqueteA << ". Paquetes no entregados: " << veces_no_entrega_paqueteA << endl;
+    cout << "Almacen B -> Paquetes entregados: " << n_simulaciones - veces_no_entrega_paqueteB << ". Paquetes no entregados: " << veces_no_entrega_paqueteB << endl;
     cout << "Almacen A -> Intervalo del 90%: [" << L_A << ", " << R_A << "]" << endl;
     cout << "Almacen B -> Intervalo del 90%: [" << L_B << ", " << R_B << "]" << endl;
 

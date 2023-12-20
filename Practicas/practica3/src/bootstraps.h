@@ -20,7 +20,7 @@ using namespace std;
  *                  
  */
 void realizar_bootstraps(const vector<Carretera>& carreteras, const vector<Interseccion>& intersecciones,int IC,
-                         int I_almacen,int n,float& L,float& R,const int limiteTiempo);
+                         int I_almacen,int n,float& L,float& R,int& no_entregado,const int limiteTiempo);
 
 
 

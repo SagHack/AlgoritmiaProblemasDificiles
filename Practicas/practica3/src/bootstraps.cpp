@@ -50,20 +50,21 @@ float bootstrap(const vector<int> tiempos){
  *                  
  */
 void realizar_bootstraps(const vector<Carretera>& carreteras, const vector<Interseccion>& intersecciones,
-                         int IC, int I_almacen,int n,float& L,float& R, const int limiteTiempo){
+                         int IC, int I_almacen,int n,float& L,float& R,int& no_entregado, const int limiteTiempo){
     
     // Para hacer completamente aleatoria la secuencia, necesitamos utilizar
     // una semilla que cambie aunque las ejecuciones sean muy seguidas
     auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-    srand(static_cast<unsigned>(seed));  // Seed for rand()                       
+    srand(static_cast<unsigned>(seed));  // Seed for rand()   
 
     vector<int> tiempos; // Vector con los n tiempos de realizar las n simulaciones
     vector<float> medias_bootstraps; // Vector con las medias de cada bootstrap
     float media_tiempos,tiempo;
-
+    no_entregado = 0;
     // Realizamos las n simulaciones y guardamos el tiempo de cada una
     for(int i=0;i<n;i++){
         tiempo = entregarPaquete(carreteras,intersecciones,IC,I_almacen,limiteTiempo);
+        if(tiempo >= limiteTiempo) no_entregado++;
         tiempos.push_back(tiempo);
     }
 

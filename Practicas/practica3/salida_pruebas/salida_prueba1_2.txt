@@ -2,7 +2,6 @@
 Prueba con 100 simulaciones
 
 Realizando simulaciones Almacen A
-Intentamos entregar tu paquete, pero no estabas
 Simulaciones Almacen A finalizadas
 
 Realizando simulaciones Almacen B
@@ -11,10 +10,10 @@ Intentamos entregar tu paquete, pero no estabas
 Intentamos entregar tu paquete, pero no estabas
 Simulaciones Almacen B finalizadas
 
-Almacen A -> Paquetes entregados: 99. Paquetes no entregados: 1
+Almacen A -> Paquetes entregados: 100. Paquetes no entregados: 0
 Almacen B -> Paquetes entregados: 97. Paquetes no entregados: 3
-Almacen A -> Intervalo del 90%: [39.145, 66.565]
-Almacen B -> Intervalo del 90%: [131.92, 167.095]
+Almacen A -> Intervalo del 90%: [40.45, 65.3]
+Almacen B -> Intervalo del 90%: [145.795, 180.765]
 
 ----------------------------------------------------------
 
@@ -29,7 +28,6 @@ Intentamos entregar tu paquete, pero no estabas
 Intentamos entregar tu paquete, pero no estabas
 Intentamos entregar tu paquete, pero no estabas
 Intentamos entregar tu paquete, pero no estabas
-Intentamos entregar tu paquete, pero no estabas
 Simulaciones Almacen A finalizadas
 
 Realizando simulaciones Almacen B
@@ -49,13 +47,12 @@ Intentamos entregar tu paquete, pero no estabas
 Intentamos entregar tu paquete, pero no estabas
 Intentamos entregar tu paquete, pero no estabas
 Intentamos entregar tu paquete, pero no estabas
-Intentamos entregar tu paquete, pero no estabas
 Simulaciones Almacen B finalizadas
 
-Almacen A -> Paquetes entregados: 991. Paquetes no entregados: 9
-Almacen B -> Paquetes entregados: 983. Paquetes no entregados: 17
-Almacen A -> Intervalo del 90%: [47.656, 56.2045]
-Almacen B -> Intervalo del 90%: [132.697, 144.422]
+Almacen A -> Paquetes entregados: 992. Paquetes no entregados: 8
+Almacen B -> Paquetes entregados: 984. Paquetes no entregados: 16
+Almacen A -> Intervalo del 90%: [49.0715, 58.2995]
+Almacen B -> Intervalo del 90%: [133.766, 144.544]
 
 ----------------------------------------------------------
 
@@ -106,16 +103,6 @@ Intentamos entregar tu paquete, pero no estabas
 Intentamos entregar tu paquete, pero no estabas
 Intentamos entregar tu paquete, pero no estabas
 Intentamos entregar tu paquete, pero no estabas
-Intentamos entregar tu paquete, pero no estabas
-Intentamos entregar tu paquete, pero no estabas
-Intentamos entregar tu paquete, pero no estabas
-Intentamos entregar tu paquete, pero no estabas
-Intentamos entregar tu paquete, pero no estabas
-Intentamos entregar tu paquete, pero no estabas
-Intentamos entregar tu paquete, pero no estabas
-Intentamos entregar tu paquete, pero no estabas
-Intentamos entregar tu paquete, pero no estabas
-Intentamos entregar tu paquete, pero no estabas
 Simulaciones Almacen A finalizadas
 
 Realizando simulaciones Almacen B
@@ -304,12 +291,15 @@ Intentamos entregar tu paquete, pero no estabas
 Intentamos entregar tu paquete, pero no estabas
 Intentamos entregar tu paquete, pero no estabas
 Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
+Intentamos entregar tu paquete, pero no estabas
 Simulaciones Almacen B finalizadas
 
-Almacen A -> Paquetes entregados: 9945. Paquetes no entregados: 55
-Almacen B -> Paquetes entregados: 9812. Paquetes no entregados: 188
-Almacen A -> Intervalo del 90%: [52.1879, 54.966]
-Almacen B -> Intervalo del 90%: [141.813, 145.275]
+Almacen A -> Paquetes entregados: 9956. Paquetes no entregados: 44
+Almacen B -> Paquetes entregados: 9809. Paquetes no entregados: 191
+Almacen A -> Intervalo del 90%: [52.2617, 54.9406]
+Almacen B -> Intervalo del 90%: [141.13, 144.695]
 
 ----------------------------------------------------------
 

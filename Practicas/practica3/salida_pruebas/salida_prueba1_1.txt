@@ -9,8 +9,8 @@ Simulaciones Almacen B finalizadas
 
 Almacen A -> Paquetes entregados: 100. Paquetes no entregados: 0
 Almacen B -> Paquetes entregados: 100. Paquetes no entregados: 0
-Almacen A -> Intervalo del 90%: [43.875, 58.685]
-Almacen B -> Intervalo del 90%: [53.775, 69.9]
+Almacen A -> Intervalo del 90%: [43.84, 57.115]
+Almacen B -> Intervalo del 90%: [37.54, 48.21]
 
 ----------------------------------------------------------
 
@@ -24,8 +24,8 @@ Simulaciones Almacen B finalizadas
 
 Almacen A -> Paquetes entregados: 1000. Paquetes no entregados: 0
 Almacen B -> Paquetes entregados: 1000. Paquetes no entregados: 0
-Almacen A -> Intervalo del 90%: [48.5975, 52.896]
-Almacen B -> Intervalo del 90%: [48.8385, 53.342]
+Almacen A -> Intervalo del 90%: [50.56, 55.354]
+Almacen B -> Intervalo del 90%: [47.8715, 51.8205]
 
 ----------------------------------------------------------
 
@@ -39,8 +39,8 @@ Simulaciones Almacen B finalizadas
 
 Almacen A -> Paquetes entregados: 10000. Paquetes no entregados: 0
 Almacen B -> Paquetes entregados: 10000. Paquetes no entregados: 0
-Almacen A -> Intervalo del 90%: [50.2686, 51.6725]
-Almacen B -> Intervalo del 90%: [49.6086, 50.956]
+Almacen A -> Intervalo del 90%: [50.1824, 51.6397]
+Almacen B -> Intervalo del 90%: [50.1839, 51.5447]
 
 ----------------------------------------------------------
 

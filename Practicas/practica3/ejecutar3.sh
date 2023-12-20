@@ -63,7 +63,7 @@ if [ "$1" == "$OPCION_PRUEBA" ]; then
 
     compilar
 
-    ./bin/prueba "$DIR_ENTRADA/prueba2.txt" 1000 100
+    ./bin/prueba "$DIR_ENTRADA/Berlin-Prezaulger.txt" 1000
 
 
 elif [ "$1" == "$OPCION_PRUEBAS_INTENSIVAS" ]; then
@@ -87,8 +87,14 @@ elif [ "$1" == "$OPCION_PRUEBAS_INTENSIVAS" ]; then
     simulaciones=(100 1000 10000)
     limitesTiempo=(500 500 500 500 500)
     pruebas=("prueba1_1.txt" "prueba1_2.txt" "prueba1_3.txt" "prueba1_4.txt" "prueba1_5.txt")
+    pruebas2=("prueba2_1.txt" "prueba2_2.txt" "prueba2_3.txt" "prueba2_4.txt" "prueba2_5.txt" "prueba2_6.txt")
+    pruebas3=("prueba3.txt")
+    limitesTiempo3=(5000)
 
     size=${#pruebas[@]}
+    size2=${#pruebas2[@]}
+    size3=${#pruebas3[@]}
+
     sims=${#simulaciones[@]}
     
     for ((i = 0; i < size; i++)); do
@@ -101,6 +107,28 @@ elif [ "$1" == "$OPCION_PRUEBAS_INTENSIVAS" ]; then
             done
         else
             echo "El fichero ${pruebas[i]} del directorio $DIR_ENTRADA no existe o no es un fichero regular."
+        fi
+    done
+
+    for ((i = 0; i < size2; i++)); do
+        if [ -f "$DIR_ENTRADA/${pruebas2[i]}" ]; then
+            echo "" > "$DIR_SALIDA/salida_${pruebas2[i]}"
+            echo -e "Prueba con 10000 simulaciones\n" >> "$DIR_SALIDA/salida_${pruebas2[i]}"
+            ./bin/prueba "$DIR_ENTRADA/${pruebas2[i]}" "10000" "500" >> "$DIR_SALIDA/salida_${pruebas2[i]}"
+            echo -e "\n----------------------------------------------------------\n" >> "$DIR_SALIDA/salida_${pruebas2[i]}"
+        else
+            echo "El fichero ${pruebas2[i]} del directorio $DIR_ENTRADA no existe o no es un fichero regular."
+        fi
+    done
+
+    for ((i = 0; i < size3; i++)); do
+        if [ -f "$DIR_ENTRADA/${pruebas3[i]}" ]; then
+            echo "" > "$DIR_SALIDA/salida_${pruebas3[i]}"
+            echo -e "Prueba con 10000 simulaciones\n" >> "$DIR_SALIDA/salida_${pruebas3[i]}"
+            ./bin/prueba "$DIR_ENTRADA/${pruebas3[i]}" "10000" "${limitesTiempo3[0]}" >> "$DIR_SALIDA/salida_${pruebas3[i]}"
+            echo -e "\n----------------------------------------------------------\n" >> "$DIR_SALIDA/salida_${pruebas3[i]}"
+        else
+            echo "El fichero ${pruebas3[i]} del directorio $DIR_ENTRADA no existe o no es un fichero regular."
         fi
     done
 

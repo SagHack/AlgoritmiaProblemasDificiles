@@ -1,0 +1,16 @@
+
+Prueba con 10000 simulaciones
+
+Realizando simulaciones Almacen A
+Simulaciones Almacen A finalizadas
+
+Realizando simulaciones Almacen B
+Simulaciones Almacen B finalizadas
+
+Almacen A -> Paquetes entregados: 10000. Paquetes no entregados: 0
+Almacen B -> Paquetes entregados: 10000. Paquetes no entregados: 0
+Almacen A -> Intervalo del 90%: [4.5912, 4.6703]
+Almacen B -> Intervalo del 90%: [4.5518, 4.6335]
+
+----------------------------------------------------------
+

@@ -2,7 +2,7 @@
 # Fichero: 	Makefile
 # Autores: 	Diego García Aranda 820506
 #			Simón Alonso Gutiérrez 821038
-# Fecha entrega:	22/11/2023
+# Fecha entrega:	22/12/2023
 # Coms:   Makefile para la práctica 3 de Algoritmia para Problemas Difíciles
 #		  "make pruebas" construye el ejecutable para las pruebas
 #*****************************************************************

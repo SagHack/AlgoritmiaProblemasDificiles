@@ -3,29 +3,19 @@ Alonso Gutiérrez, Simón 821038@unizar.es    a821038
 
 
 La práctica está organizada en los siguientes directorios:
-    - minisat-master: alberga el código de la librería de minisat que implementa el SAT Solver utilizado.
-    - build: alberga tanto los ficheros objetos como el ejecutable usado.
-    - entrada_pruebas_intensivas: alberga los ficheros de entrada que han sido usados para la ejecución de las pruebas intensivas, 
-      es decir, aquellas pruebas usadas para obtener resultados del tiempo de ejecución de los distintos métodos de resolución del 
-      cuadrado latino y a partir de estos resultados, comparar el rendimiento. Estos fichero
-    - salida_pruebas_intensivas: alberga los ficheros de salida, que contiene los cuadrados latinos resueltos, resultantes de 
-      la ejecución de las pruebas intensivas.
-    - resultados_pruebas_intensivas: alberga los resultados del tiempo de ejecución de los distintos métodos de resolución del 
-      cuadrado latino en las pruebas intensivas.
-    - CL_parciales: alberga los ficheros de entrada generados en una prueba simple que contienen los cuadrados latinos
-      parciales a resolver.
-    - CL_resueltos: alberga los ficheros de salida generados en una prueba simple que contienen los cuadrados latinos
-      parciales resueltos.
+    - src: alberga el código fuente de los ficheros que implementan el algoritmo de entrega, el algoritmo de 
+      lectura de las entrada de las pruebas y el método bootstrap utilizado para obtener los intervalos de confianza.
+    - build: alberga los ficheros objetos creados tras la compilación de los distintos ficheros fuente.
+    - bin: alberga los ficheros binarios creados tras el linkado de los distintos ficheros objeto que hay en build.
+    - entrada_pruebas: alberga los ficheros de entrada que han sido usados para las pruebas.
+    - salida_pruebas: alberga los ficheros de salida de cada una de las pruebas, que contienen los intervalos de confianza 
+      para las empresas A y B tras la realización de las simulaciones.
     
 
-Además de estos directorios, existen dos ficheros importantes: ejecutar2.sh y CMakeLists.txt. 
-El fichero CMakeLists.txt es invocado por ejecutar2.sh a la hora de la compilación de los distintos ficheros fuente y del linkado de los ficheros objeto.
-El fichero ejecutar2.sh es el script que ejecuta todas las acciones posibles. Las maneras de invocarlo son:
+Además de estos directorios, existen dos ficheros importantes: ejecutar3.sh y Makefile. 
+El fichero Makefile es invocado por ejecutar3.sh a la hora de la compilación de los distintos ficheros fuente y del linkado de los ficheros objeto.
+El fichero ejecutar3.sh es el script que ejecuta todas las acciones posibles. Las maneras de invocarlo son:
 
-    ./ejecutar2.sh prueba <dimensión cuadrado latino> <porcentaje celdas a rellenar>
-                          siendo <porcentaje celdas a rellenar> un decimal entre 1 y 100.
+    ./ejecutar3.sh pruebas                Ejecuta las pruebas
 
-    ./ejecutar2.sh pruebas_intensivas     Ejecuta las pruebas intensivas
-
-    ./ejecutar2.sh clean                  Borra los directorios build,entrada_pruebas_intensivas,salida_pruebas_intensivas,
-                                          resultados_pruebas_intensivas,CL_parciales y CL_resueltos
+    ./ejecutar3.sh clean                  Borra los directorios build,bin y salida_pruebas

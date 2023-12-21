@@ -2,8 +2,7 @@
 mensajeError() {
     printf "\nParámetros incorrectos.\n" 1>&2;
     printf "Ejecuciones correctas:\n" 1>&2;
-    printf "\t ./ejecutar3.sh prueba\n" 1>&2;
-    printf "\t ./ejecutar3.sh pruebas_intensivas\n" 1>&2;
+    printf "\t ./ejecutar3.sh pruebas\n" 1>&2;
     printf "\t ./ejecutar3.sh clean\n\n" 1>&2;
     exit 1;
 }
@@ -30,12 +29,11 @@ compilar(){
 
 }
 
-OPCION_PRUEBA=prueba
-OPCION_PRUEBAS_INTENSIVAS=pruebas_intensivas
+OPCION_PRUEBAS=pruebas
 OPCION_CLEAN=clean
 
 if [ "$#" -eq 1 ]; then
-    if [ "$1" != "$OPCION_CLEAN" ] && [ "$1" != "$OPCION_PRUEBAS_INTENSIVAS" ] && [ "$1" != "$OPCION_PRUEBA" ]; then
+    if [ "$1" != "$OPCION_CLEAN" ] && [ "$1" != "$OPCION_PRUEBAS" ]; then
         mensajeError
     fi
 else
@@ -46,29 +44,7 @@ fi
 RUTA=$(pwd)/$(dirname "$0")
 cd "$RUTA"
 
-if [ "$1" == "$OPCION_PRUEBA" ]; then
-
-    DIR_ENTRADA=entradas_pruebas
-    DIR_SALIDA=salida_pruebas
-
-    if [ ! -d "$DIR_ENTRADA" ]; then
-        echo "No existe el directorio que almacena las entradas de las pruebas."
-        exit 1
-    fi
-
-    if [ ! -d "$DIR_SALIDA" ]; then
-        mkdir "$DIR_SALIDA"
-    fi
-
-
-    compilar
-
-    ./bin/prueba "$DIR_ENTRADA/Berlin-Prezaulger.txt" 1000
-
-
-elif [ "$1" == "$OPCION_PRUEBAS_INTENSIVAS" ]; then
-
-    compilar
+if [ "$1" == "$OPCION_PRUEBAS" ]; then
 
     DIR_ENTRADA=entradas_pruebas
     DIR_SALIDA=salida_pruebas
